@@ -24,7 +24,7 @@ export const addTest = async (req, res) => {
         const { name, data1Name, data2Name } = req.body;
 
         if (req.file) {
-            const imageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
+            const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
             const newTest = Test({
                 name,
                 data1Name,
@@ -106,7 +106,7 @@ export const updateTest = async (req, res) => {
             }
             catch {}
 
-            const imageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
+            const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
 
             await Test.findByIdAndUpdate(req.params.testId, {
                 name,

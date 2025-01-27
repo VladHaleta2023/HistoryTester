@@ -51,7 +51,7 @@ export const addData = async (req, res) => {
         else {
             const uploadedFiles = await Promise.all(
                 req.files.map(async (file) => {
-                    const imageUrl = `http://localhost:5000/uploads/${file.filename}`;
+                    const imageUrl = `https://historytester.onrender.com/uploads/${file.filename}`;
     
                     const newImage = new Image({
                         dataId: newData._id,
@@ -226,7 +226,7 @@ export const uploadImageData = async (req, res) => {
             }
             catch {}
 
-            const imageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
+            const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
 
             await Image.findByIdAndUpdate(req.params.imageId, {
                 imageUrl
@@ -362,7 +362,7 @@ export const updateData = async (req, res) => {
         else {
             const uploadedFiles = await Promise.all(
                 req.files.map(async (file) => {
-                    const imageUrl = `http://localhost:5000/uploads/${file.filename}`;
+                    const imageUrl = `https://historytester.onrender.com/uploads/${file.filename}`;
     
                     const newImage = new Image({
                         dataId: data._id,
