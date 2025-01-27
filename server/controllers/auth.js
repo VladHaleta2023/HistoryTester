@@ -45,8 +45,8 @@ export const register = async (req, res) => {
                 domain: 'historytester.onrender.com',
                 path: '/',
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "none",
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'none',
                 maxAge: 1 * 24 * 60 * 60 * 1000
             });
 
@@ -113,8 +113,8 @@ export const login = async (req, res) => {
                 domain: 'historytester.onrender.com',
                 path: '/',
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "none",
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'none',
                 maxAge: 1 * 24 * 60 * 60 * 1000,
             });
 
@@ -150,8 +150,8 @@ export const logOut = async (req, res) => {
                 domain: 'historytester.onrender.com',
                 path: '/',
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "none",
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'none',
             })
         }
         catch (err) {
