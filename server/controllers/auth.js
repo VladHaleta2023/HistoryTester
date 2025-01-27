@@ -42,6 +42,8 @@ export const register = async (req, res) => {
 
         try {
             res.cookie('token', token, {
+                domain: 'historytester.onrender.com',
+                path: '/',
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'None',
@@ -108,6 +110,8 @@ export const login = async (req, res) => {
 
         try {
             res.cookie('token', token, {
+                domain: 'historytester.onrender.com',
+                path: '/',
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'None',
@@ -143,6 +147,8 @@ export const logOut = async (req, res) => {
         try {
             delete req.headers.authorization;
             res.clearCookie('token', {
+                domain: 'historytester.onrender.com',
+                path: '/',
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'None',
