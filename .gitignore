@@ -1,0 +1,116 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# IDE/Editor specific files
+.vscode/
+.idea/
+*.iml
+
+# Optional npm cache directory
+.npm/
+
+# Debugger files
+*.pid
+*.seed
+
+# Coverage directory
+coverage/
+
+# Deployment files
+.env.*
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Misc
+*.swp
+*.swo
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# Node modules
+/node_modules/
+
+# Build output
+/dist/
+/build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+/bower_components/
+
+# Environment files
+/.env
+/.env.local
+/.env.development
+/.env.test
+/.env.production
+
+# VS Code settings
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Jest / Testing
+/coverage/
+
+# Next.js
+/.next/
+
+# React Native
+/react-native/

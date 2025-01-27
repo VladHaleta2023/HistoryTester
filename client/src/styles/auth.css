@@ -1,0 +1,221 @@
+@keyframes Overlay--open {
+    0% {
+        background-color: rgba(30, 30, 30, 0.0);
+    }
+    100% {
+        background-color: rgba(30, 30, 30, 1.0);
+    }
+}
+
+@keyframes Overlay--close {
+    0% {
+        background-color: rgba(30, 30, 30, 1.0);
+    }
+    100% {
+        background-color: rgba(30, 30, 30, 0.0);
+    }
+}
+
+img.userPage {
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    max-width: 60px;
+    max-height: 60px;
+    width: 60px;
+    height: 60px;
+}
+
+img.updateDataPage {
+    background-repeat: no-repeat;
+    max-width: 600px;
+    margin-bottom: 10px;
+}
+
+img.resultDataPage {
+    background-repeat: no-repeat;
+    max-width: 600px;
+}
+
+h1 {
+    font-size: 36px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 16px 0px;
+}
+
+img.updateTestPage {
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    max-width: 200px;
+    max-height: 200px;
+    width: 200px;
+    height: 200px;
+}
+
+.tableImages {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+img.tablePage {
+    background-repeat: no-repeat;
+    max-height: 300px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+html, body, .scroll-bar-hidden {
+    scrollbar-width: none;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar, .scroll-bar-hidden::-webkit-scrollbar {
+    display: none !important;
+}
+
+.edit-element:hover {
+    background-color: rgb(15, 86, 15)
+}
+
+.delete-element:hover {
+    background-color: rgb(120, 0, 0);
+}
+
+.btnsLP {
+    justify-content: flex-start;
+}
+
+.btnUser:hover, .table-element:hover {
+    background-color:#50448b;
+}
+
+form.auth {
+    height: calc(100vh - 70px);
+    width: 100vw;
+    padding: 12px;
+    background-color: transparent;
+    color: white;
+}
+
+.lp-element:hover {
+    background-color: #212633;
+}
+
+.mainDev {
+    top: 115px;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lp-element {
+    width: 100vw;
+    max-width: 800px;
+    justify-content: center;
+    cursor: pointer;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1.2px solid #dddddd;
+    padding: 8px;
+}
+
+.progressBar {
+    background-color: '#e0e0e0';
+    border-radius: '5px';
+}
+
+textarea, .progressBar {
+    max-width: 600px;
+    color: black;
+}
+
+.elementTester {
+    width: 600px;
+}
+
+.select, .selectTester {
+    border: none;
+    border-radius: 4px;
+    background-color: white;
+    color: black;
+}
+
+.break-words, .text-wrap {
+    word-break: break-word;
+}
+
+@media only screen and (max-width: 600px) {
+    .updated {
+        flex-direction: column;
+    }
+
+    .mainDev {
+        top: 125px !important;
+    }
+
+    .dropdown-content {
+        width: 100vw;
+    }
+
+    img.resultDataPage {
+        width: 100% !important;
+    }
+
+    input, img.updateDataPage, .selectTester, textarea, .elementTester, .progressBar {
+        width: 90vw !important;
+    }
+
+    input, img.tablePage {
+        max-height: 250px !important;
+        font-size: 1.2rem;
+    }
+
+    .title {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .inputTitle {
+        font-size: 20px !important;
+    }
+
+    button {
+        margin-top: 1rem;
+    }
+
+    .passImg {
+        top: 8px !important;
+        right: 8px !important;
+    }
+
+    .btnUser {
+        font-size: 1.5rem !important;
+    }
+
+    .btnsLP {
+        justify-content: center;
+    }
+
+    .lp-element {
+        width: calc(100vw - 2rem) !important;
+    }
+
+    .dataLP {
+        justify-content: flex-start;
+    }
+
+    form.auth {
+        height: calc(100vh - 70px);
+        width: 100vw;
+        padding: 12px;
+        background-color: transparent;
+        color: white;
+    }
+}
