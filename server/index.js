@@ -22,7 +22,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://historytester.onrender.com/api'],
     methods: ['GET', 'POST', 'DELETE', 'PUT'],
     allowedHeaders: ['Authorization', 'Content-Type'],
     credentials: true,

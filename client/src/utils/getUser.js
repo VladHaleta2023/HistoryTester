@@ -3,7 +3,9 @@ import { setCredentials, setAuth, setAlert } from "../redux/reducers/authSlice.j
 
 export const fetchUser = async (dispatch, navigate) => {
     try {
-        const response = await axiosAuthInstance.get("/getMe");
+        const response = await axiosAuthInstance.get("/getMe", {
+            withCredentials: true,
+        });
         const token = response.data.token;
         const user = response.data.user;
         if (user.status !== "blocked") {
