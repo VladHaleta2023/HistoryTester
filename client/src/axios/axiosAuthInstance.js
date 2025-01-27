@@ -3,6 +3,8 @@ import store from '../redux/store.js';
 
 const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
 
+console.log(REACT_APP_API_URL);
+
 const axiosAuthInstance = axios.create({
     baseURL: `${REACT_APP_API_URL}/auth`,
     withCredentials: true,

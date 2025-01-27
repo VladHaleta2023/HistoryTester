@@ -22,7 +22,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://historytester.onrender.com'],
+    origin: ['http://localhost:3000', 'https://aquamarine-peony-5990bc.netlify.app'],
     methods: ['GET', 'POST', 'DELETE', 'PUT'],
     allowedHeaders: ['Authorization', 'Content-Type'],
     credentials: true,
