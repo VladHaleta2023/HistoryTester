@@ -174,10 +174,10 @@ export const changeTestStatus = async (req, res) => {
             });
         }
 
-        console.log(req.params.testId);
+        const { verified } = req.body;
 
         await Test.findByIdAndUpdate(req.params.testId, {
-            verified: req.verified
+            verified: verified
         });
 
         return res.status(200).json({
