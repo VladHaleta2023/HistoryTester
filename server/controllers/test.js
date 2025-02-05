@@ -149,7 +149,11 @@ export const getTests = async (req, res) => {
             });
         }
 
-        const tests = await Test.find().sort({ name: 1 });
+        let tests = [];
+        if (user.status === "admin")
+            tests = await Test.find().sort({ name: 1 });
+        else
+            tests = await Test.find({ verified: true }).sort({ name: 1 });
 
         return res.status(200).json({
             tests,
