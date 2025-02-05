@@ -174,6 +174,8 @@ export const changeTestStatus = async (req, res) => {
             });
         }
 
+        console.log(req.params.testId);
+
         await Test.findByIdAndUpdate(req.params.testId, {
             verified: req.verified
         });
