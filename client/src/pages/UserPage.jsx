@@ -84,6 +84,8 @@ export const UserPage = () => {
     const deleteTest = async (e, testId) => {
         e.preventDefault();
 
+        localStorage.setItem("test", testId);
+
         Swal.fire({
             title: "Uwaga!",
             text: "Czy jesteś pewny, że chcesz usunąć test?",

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addTest, getTests, getTest, deleteImage, updateTest, deleteTest } from "../controllers/test.js";
+import { addTest, getTests, getTest, deleteImage, updateTest, deleteTest, changeTestStatus } from "../controllers/test.js";
 import { checkAuth } from "../middleware/checkAuth.js";
 import path from "path";
 import multer from "multer";
@@ -37,6 +37,8 @@ router.post('/', checkAuth, upload.single('image'), addTest);
 router.get('/', checkAuth, getTests);
 
 router.get('/:testId', checkAuth, getTest);
+
+router.put('/:testId/status', checkAuth, changeTestStatus);
 
 router.delete('/:testId/image', checkAuth, deleteImage);
 

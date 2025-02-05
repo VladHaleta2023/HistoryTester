@@ -25,6 +25,11 @@ const TestSchema = new mongoose.Schema({
         type: String,
         required: false,
         default: null
+    },
+    verified: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 },
 {

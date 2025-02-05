@@ -149,11 +149,37 @@ export const getTests = async (req, res) => {
             });
         }
 
-        const tests = await Test.find().sort({ name: 1 });;
+        const tests = await Test.find().sort({ name: 1 });
 
         return res.status(200).json({
             tests,
             message: "Uzyskanie testów udane"
+        });
+    }
+    catch (err) {
+        console.log(`Server error: ${err}`);
+        return res.status(500).json({
+            message: `Server error: ${err}`
+        });
+    }
+}
+
+export const changeTestStatus = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+
+        if (!user) {
+            return res.status(400).json({
+                message: "Użytkownik nie znaleziony"
+            });
+        }
+
+        await Test.findByIdAndUpdate(req.params.testId, {
+            verified: req.verified
+        });
+
+        return res.status(200).json({
+            message: "Zmiana statusa testa udana"
         });
     }
     catch (err) {
