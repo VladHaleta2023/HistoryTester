@@ -168,7 +168,6 @@ export const UpdateDataPage = () => {
                 confirmButtonText: 'OK',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.reload();
                     navigate(`/${localStorage.getItem("test")}/table`);
                 }
             });

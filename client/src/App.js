@@ -13,6 +13,7 @@ import { UpdateDataPage } from "./pages/UpdateDataPage.jsx";
 import { TesterPage } from "./pages/TesterPage.jsx";
 import { ResultPage } from "./pages/ResultPage.jsx";
 import { TesterSettingsPage } from "./pages/TesterSettingsPage.jsx";
+import { AdminTestsPage } from "./pages/AdminTestsPage.jsx";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/:testId/table" element={<TablePage />} />
           <Route path="/new" element={<AddTestPage />} />
           <Route path="/users" element={<UsersPage />} />
+          <Route path="/admin/tests" element={<AdminTestsPage />} />
         </Routes>
       </Router>
     </div>

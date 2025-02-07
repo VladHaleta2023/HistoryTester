@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axiosAuthInstance from "../axios/axiosAuthInstance.js";
+import axiosTestInstance from "../axios/axiosTestInstance.js";
 import { showAlert } from "../utils/showSwalAlert.js";
 import { useNavigate, Link } from 'react-router-dom';
 import Select from "react-select";
@@ -7,31 +7,32 @@ import { useDispatch } from 'react-redux';
 import { setAlert } from "../redux/reducers/authSlice.js";
 import Swal from 'sweetalert2';
 
-export const UsersPage = () => {
-    const [users, setUsers] = useState([]);
+export const AdminTestsPage = () => {
+    const [tests, setTests] = useState([]);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const statusOptions = [
-        { value: "user", label: "User" },
-        { value: "teacher", label: "Teacher" },
-        { value: "blocked", label: "Blocked" }
+        { value: true, label: "Enabled" },
+        { value: false, label: "Disabled" }
     ];
 
-    const handleChangeStatus = async (selectedOption, userId) => {
+    const handleChangeStatus = async (selectedOption, testId) => {
         const { value } = selectedOption;
+        const formData = new FormData();
+        formData.append("verified", value);
 
         try {
-            const response = await axiosAuthInstance.put(`/${userId}`, { status: value }, { withCredentials: true });
+            const response = await axiosTestInstance.put(`/${testId}/status`, formData, { withCredentials: true });
             Swal.fire({
-                title: "Aktualizacja użytkownika",
+                title: "Aktualizacja testa",
                 text: response.data.message,
                 icon: 'success',
                 confirmButtonText: 'OK',
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.reload();
-                    navigate('/users');
+                    navigate('/admin/tests');
                 }
             });
         }
@@ -40,12 +41,12 @@ export const UsersPage = () => {
                 const message = error.response.data.message;
                 const status = error.response.status;
                 dispatch(setAlert({status, message}));
-                showAlert(status, "Aktualizacja użytkownika", message);
+                showAlert(status, "Aktualizacja testa", message);
             }
             else {
                 console.error('Error:', error.message);
                 dispatch(setAlert({status: 500, message: error.message}));
-                showAlert("500", "Aktualizacja użytkownika", error.message);
+                showAlert("500", "Aktualizacja testa", error.message);
             }
         }
     }
@@ -81,20 +82,20 @@ export const UsersPage = () => {
 
         const fetchData = async () => {
             try {
-                const response = await axiosAuthInstance.get("/");
-                setUsers(response.data.users);
+                const response = await axiosTestInstance.get("/");
+                setTests(response.data.tests);
             }
             catch (error) {
                 if (error.response) {
                     const message = error.response.data.message;
                     const status = error.response.status;
                     if (localStorage.getItem('auth') === "true")
-                        showAlert(status, "Uzyskanie użytkowników", message);
+                        showAlert(status, "Uzyskanie testów", message);
                 }
                 else {
                     console.error('Error:', error.message);
                     if (localStorage.getItem('auth') === "true")
-                        showAlert(500, "Uzyskanie użytkowników", error.message);
+                        showAlert(500, "Uzyskanie testów", error.message);
                 }
             }
         }
@@ -103,13 +104,13 @@ export const UsersPage = () => {
     }, [navigate])
 
     const getStatus = (status) => {
+        status = String(status);
+
         switch (status) {
-            case "user":
-                return { value: "user", label: "User" };
-            case "teacher":
-                return { value: "teacher", label: "Teacher" };
-            case "blocked":
-                return { value: "blocked", label: "Blocked" };
+            case "true":
+                return { value: true, label: "Enabled" };
+            case "false":
+                return { value: false, label: "Disabled" };
             default:
                 return null;
         }
@@ -151,24 +152,24 @@ export const UsersPage = () => {
             </nav>
         </header>
         <main className="relative p-2 text-white text-[24px] w-screen flex justify-center items-center text-center">
-            {users.length > 0 ? (
+            {tests.length > 0 ? (
                 <table className="text-start max-w-[600px] w-[calc(100vw)] border border-gray-300 mx-auto mt-4 mb-2">
                     <thead className="bg-[#5b48c2] text-white select-none">
                         <tr>
-                            <th className="text-start">Użytkownik</th>
+                            <th className="text-start">Test</th>
                             <th className="text-start max-w-[170px] w-[170px]">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {
-                            users.map((item, index) => (
+                            tests.map((item, index) => (
                                 <React.Fragment key={index}>
                                     <tr className="bg-slate-100 text-black">
-                                        <td className="text-wrap">{item.username}</td>
+                                        <td className="text-wrap">{item.name}</td>
                                         <td className="max-w-[170px] w-[170px]">
                                             <Select
                                                 className="select"
-                                                value={getStatus(item.status)}
+                                                value={getStatus(item.verified)}
                                                 styles={customStyles}
                                                 options={statusOptions}
                                                 menuPlacement="bottom"
@@ -182,7 +183,7 @@ export const UsersPage = () => {
                     </tbody>
                 </table>
             ) : (
-                <p className="font-bold text-indigo-600">Nie ma użytkowników</p>
+                <p className="font-bold text-indigo-600">Nie ma testów</p>
             )}
         </main>
     </>

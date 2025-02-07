@@ -20,7 +20,7 @@ export const TesterSettingsPage = () => {
 
     const typeTesterOptions = [
         { value: "Select", label: "Select" },
-        { value: "Text Area", label: "Text Area" }
+        { value: "Text Area", label: "Text" }
     ];
 
     useEffect(() => {
@@ -75,7 +75,7 @@ export const TesterSettingsPage = () => {
             return { value: "Select", label: "Select" }
         }
         else {
-            return { value: "Text Area", label: "Text Area" }
+            return { value: "Text Area", label: "Text" }
         }
     }
 
@@ -134,7 +134,9 @@ export const TesterSettingsPage = () => {
                 <div className="flex items-start">
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
                     <div className="ml-auto relative inline-block">
-                        <Link to={`/${localStorage.getItem("test")}/tester`}>
+                        <Link to={`/${localStorage.getItem("test")}/tester`} onClick={() => {
+                            localStorage.removeItem("randIndex");
+                        }}>
                             <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                                 Wrócić
                             </div>

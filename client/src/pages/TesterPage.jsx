@@ -74,7 +74,7 @@ export const TesterPage = () => {
                         localStorage.setItem("typeTester", "select");
 
                     if (Number(localStorage.getItem("randIndex")) === response.data.datas.length - 1)
-                        setTextBtnNext("Podsumowanie");
+                        setTextBtnNext("Wyniki");
                 }
                 catch {}
             } 
@@ -271,7 +271,11 @@ export const TesterPage = () => {
 
         const correctAutor = datas[numbers[randIndex]].data.data1;
         const correctName = datas[numbers[randIndex]].data.data2;
-        localStorage.setItem("randIndex", Number(randIndex) + 1);
+
+        if (Number(randIndex) + 1 > datas.length)
+            localStorage.setItem("randIndex", 0);
+        else
+            localStorage.setItem("randIndex", Number(randIndex) + 1);
 
         if (userAutorAnswer === correctAutor && userNameAnswer === correctName) {
             answers.push({

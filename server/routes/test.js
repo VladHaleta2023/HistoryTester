@@ -38,7 +38,7 @@ router.get('/', checkAuth, getTests);
 
 router.get('/:testId', checkAuth, getTest);
 
-router.put('/:testId/status', checkAuth, changeTestStatus);
+router.put('/:testId/status', checkAuth, upload.none(), changeTestStatus);
 
 router.delete('/:testId/image', checkAuth, deleteImage);
 

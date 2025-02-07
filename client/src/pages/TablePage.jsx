@@ -9,10 +9,12 @@ export const TablePage = () => {
     const navigate = useNavigate();
     const auth = useSelector((state) => state.auth);
     const [status, setStatus] = useState(localStorage.getItem("status") || "user");
+    const [autor, setAutor] = useState(localStorage.getItem("autor") || "no");
     const [datas, setDatas] = useState([]);
 
     useEffect(() => {
         setStatus(localStorage.getItem("status") || "user");
+        setAutor(localStorage.getItem("autor") || "no");
 
         const fetchData = async () => {
             try {
@@ -133,7 +135,7 @@ export const TablePage = () => {
                         </Link>
                     </div>
                 </div>
-                { status !== "user" ? (
+                { (status !== "user" && autor === "yes") ? (
                 <div className="ml-0 flex items-center justify-start mt-4">
                     <div className="relative inline-block mr-2">
                         <div className="profile-element">
@@ -147,7 +149,7 @@ export const TablePage = () => {
                 </div>) : null}
             </nav>
         </header>
-        { status === "user" ? (
+        { (status === "user" || autor === "no") ? (
             <main className={`relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px]`}>
             {datas.length === 0 ? (
                 <p className="font-bold text-indigo-600">Nie ma danych</p>

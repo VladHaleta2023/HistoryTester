@@ -23,6 +23,14 @@ export const addTest = async (req, res) => {
 
         const { name, data1Name, data2Name } = req.body;
 
+        const test = await Test.findOne({name: name});
+
+        if (test) {
+            return res.status(400).json({
+                message: "Taki test już istnieje"
+            });
+        }
+
         if (req.file) {
             const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
             const newTest = Test({
@@ -150,10 +158,18 @@ export const getTests = async (req, res) => {
         }
 
         let tests = [];
-        if (user.status === "admin")
-            tests = await Test.find().sort({ name: 1 });
+        if (user.status === "user")
+            tests = await Test.find({ verified: true }).sort({ "createdAt": -1 });
+        else if (user.status === "teacher") {
+            tests = await Test.find({
+                $or: [
+                    { userId: req.userId },
+                    { verified: true }
+                ]
+            }).sort({ createdAt: -1 });
+        }
         else
-            tests = await Test.find({ verified: true }).sort({ name: 1 });
+            tests = await Test.find().sort({ "createdAt": -1 });
 
         return res.status(200).json({
             tests,

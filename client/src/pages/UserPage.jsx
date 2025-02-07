@@ -13,9 +13,12 @@ export const UserPage = () => {
     const auth = useSelector((state) => state.auth);
     const [status, setStatus] = useState(auth?.user?.status || "user");
     const [tests, setTests] = useState([]);
+    const [userId, setUserId] = useState(auth?.user?._id || null);
 
     useEffect(() => {
         setStatus(auth?.user?.status || "user");
+        setUserId(auth?.user?._id || null);
+        localStorage.setItem("user", auth?.user?._id || null);
         localStorage.setItem("status", auth?.user?.status || "user");
 
         const fetchData = async () => {
@@ -189,7 +192,7 @@ export const UserPage = () => {
                         <div className="profile-element">
                             <Link to={'/users'}>
                                 <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
-                                    Użytkownicy
+                                    Zarządzanie
                                 </div>
                             </Link>
                         </div>
@@ -213,9 +216,9 @@ export const UserPage = () => {
                                     <div className="mt-2">{item.name}</div>
                                 </div>
                                 <div className="mt-4">
-                                    <div className="flex flex-wrap dataLP mt-2">
-                                        <div className="text-indigo-600 font-bold mr-2">Aktualizacja:</div>
-                                        <div className="text-slate-300 break-words">{getDate(new Date(item.updatedAt))}</div>
+                                    <div className="flex flex-wrap dataLP">
+                                        <div className="text-indigo-600 font-bold mr-2">Stworzenie:</div>
+                                        <div className="text-slate-300 break-words">{getDate(new Date(item.createdAt))}</div>
                                     </div>
                                     <div className="flex flex-wrap btnsLP mt-2">
                                         <div className="profile-element mr-2 mb-2">
@@ -266,38 +269,61 @@ export const UserPage = () => {
                                         <div className="mt-2">{item.name}</div>
                                     </div>
                                     <div>
-                                        <div className="flex flex-wrap dataLP mt-1">
-                                            <div className="text-indigo-600 font-bold mr-2">Pierwsza Kolumna:</div>
-                                            <div className="text-slate-300 break-words">{item.data1Name}</div>
-                                        </div>
+                                        { userId === item.userId || status === "admin" ? (
+                                        <>
+                                            <div className="flex flex-wrap dataLP mt-1">
+                                                <div className="text-indigo-600 font-bold mr-2">Pierwsza Kolumna:</div>
+                                                <div className="text-slate-300 break-words">{item.data1Name}</div>
+                                            </div>
+                                            <div className="flex flex-wrap dataLP">
+                                                <div className="text-indigo-600 font-bold mr-2">Druga Kolumna:</div>
+                                                <div className="text-slate-300 break-words">{item.data2Name}</div>
+                                            </div>
+                                        </>) : null }
                                         <div className="flex flex-wrap dataLP">
-                                            <div className="text-indigo-600 font-bold mr-2">Druga Kolumna:</div>
-                                            <div className="text-slate-300 break-words">{item.data2Name}</div>
+                                            <div className="text-indigo-600 font-bold mr-2">Stworzenie:</div>
+                                            <div className="text-slate-300 break-words">{getDate(new Date(item.createdAt))}</div>
                                         </div>
-                                        <div className="flex flex-wrap dataLP">
-                                            <div className="text-indigo-600 font-bold mr-2">Aktualizacja:</div>
-                                            <div className="text-slate-300 break-words">{getDate(new Date(item.updatedAt))}</div>
-                                        </div>
+                                        { userId === item.userId || status === "admin" ? (
+                                        <>
+                                            <div className="flex flex-wrap dataLP">
+                                                <div className="text-indigo-600 font-bold mr-2">Aktualizacja:</div>
+                                                <div className="text-slate-300 break-words">{getDate(new Date(item.updatedAt))}</div>
+                                            </div>
+                                            <div className="flex flex-wrap dataLP">
+                                                <div className="text-indigo-600 font-bold mr-2">Status:</div>
+                                                <div className="text-slate-300 break-words">{item.verified ? "Sprawdzony" : "Niesprawdzony"}</div>
+                                            </div>
+                                        </>) : null }
                                         <div className="flex flex-wrap btnsLP mt-2">
-                                            <div className="profile-element mr-2 mb-2">
-                                                <Link to={`/${item._id}`} onClick={() => {
-                                                    try {
-                                                        localStorage.setItem("test", item._id);
-                                                    }
-                                                    catch (err) {
-                                                        console.log(err);
-                                                    }
-                                                }}>
-                                                    <div id={item._id} className="edit-element text-[20px] py-1.5 px-7 bg-[rgb(11,71,11)] text-white border-none cursor-pointer rounded-xl">Aktualizować</div>
-                                                </Link>
-                                            </div>
-                                            <div className="profile-element mr-2 mb-2">
-                                                <div id={item._id} onClick={(e) => deleteTest(e, item._id)} className="delete-element text-[20px] py-1.5 px-8 bg-[rgb(105,0,0)] text-white border-none cursor-pointer rounded-xl">Usunąć</div>
-                                            </div>
+                                            { userId === item.userId || status === "admin" ? (
+                                            <>
+                                                <div className="profile-element mr-2 mb-2">
+                                                    <Link to={`/${item._id}`} onClick={() => {
+                                                        try {
+                                                            localStorage.setItem("test", item._id);
+                                                        }
+                                                        catch (err) {
+                                                            console.log(err);
+                                                        }
+                                                    }}>
+                                                        <div id={item._id} className="edit-element text-[20px] py-1.5 px-7 bg-[rgb(11,71,11)] text-white border-none cursor-pointer rounded-xl">Aktualizować</div>
+                                                    </Link>
+                                                </div>
+                                                <div className="profile-element mr-2 mb-2">
+                                                    <div id={item._id} onClick={(e) => deleteTest(e, item._id)} className="delete-element text-[20px] py-1.5 px-8 bg-[rgb(105,0,0)] text-white border-none cursor-pointer rounded-xl">Usunąć</div>
+                                                </div>
+                                            </>
+                                            ) : null}
                                             <div className="profile-element mr-2 mb-2">
                                                 <Link to={`/${item._id}/table`} onClick={() => {
                                                     try {
                                                         localStorage.setItem("test", item._id);
+
+                                                        if (item.userId === userId || status === "admin")
+                                                            localStorage.setItem("autor", "yes");
+                                                        else
+                                                            localStorage.setItem("autor", "no");
                                                     }
                                                     catch (err) {
                                                         console.log(err);
