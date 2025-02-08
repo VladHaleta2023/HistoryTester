@@ -166,12 +166,12 @@ export const UserPage = () => {
     }
 
     return <>
-        <header className="flex flex-col bg-[#1e1e1e] p-3.5 text-white text-[28px] select-none fixed w-screen z-10">
+        <header className="header flex flex-col p-3.5 text-white text-[28px] select-none fixed w-screen z-10">
             <nav>
                 <div className="flex items-start">
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
                     <div className="ml-auto relative inline-block">
-                        <div onClick={handleSignOut} className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
+                        <div onClick={handleSignOut} className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[rgb(76,60,161)] text-white border-none cursor-pointer">
                             Sign Out
                         </div>
                     </div>
@@ -182,7 +182,7 @@ export const UserPage = () => {
                         <div className="profile-element">
                             <Link to={'/new'}>
                                 <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
-                                    Dodać
+                                    Dodać Test
                                 </div>
                             </Link>
                         </div>
@@ -192,7 +192,7 @@ export const UserPage = () => {
                         <div className="profile-element">
                             <Link to={'/users'}>
                                 <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
-                                    Zarządzanie
+                                    Admin
                                 </div>
                             </Link>
                         </div>
@@ -203,7 +203,7 @@ export const UserPage = () => {
         { status === "user" ? (
             <main className={`relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px]`}>
             {tests.length === 0 ? (
-                <p className="font-bold text-indigo-600">Nie ma testów</p>
+                <p className="font-bold text-indigo-600"></p>
             ) : (
                 <div>
                     {
@@ -230,7 +230,7 @@ export const UserPage = () => {
                                                     console.log(err);
                                                 }
                                             }}>
-                                                <div id={item._id} className="table-element text-[20px] py-1.5 px-7 bg-[#5b48c2] text-white border-none cursor-pointer rounded-xl">Tabela</div>
+                                                <div id={item._id} className="table-element text-[20px] py-1.5 px-7 bg-[#36508d] text-white border-none cursor-pointer rounded-xl">Pokaż Tabelę</div>
                                             </Link>
                                         </div>
                                         <div className="profile-element mr-2 mb-2">
@@ -242,7 +242,7 @@ export const UserPage = () => {
                                                     console.log(err);
                                                 }
                                             }}>
-                                                <div id={item._id} className="table-element text-[20px] py-1.5 px-7 bg-[#5b48c2] text-white border-none cursor-pointer rounded-xl">Start</div>
+                                                <div id={item._id} className="start-element text-[20px] py-1.5 px-7 text-white border-none cursor-pointer rounded-xl">Start</div>
                                             </Link>
                                         </div>
                                     </div>
@@ -256,7 +256,7 @@ export const UserPage = () => {
         ) : (
             <main className={`mainDev relative p-2 text-white text-[24px] w-screen flex flex-col`}>
                 {tests.length === 0 ? (
-                    <p className="font-bold text-indigo-600">Dodaj Test</p>
+                    <p className="font-bold text-indigo-600"></p>
                 ) : (
                     <div>
                         {
@@ -307,14 +307,13 @@ export const UserPage = () => {
                                                             console.log(err);
                                                         }
                                                     }}>
-                                                        <div id={item._id} className="edit-element text-[20px] py-1.5 px-7 bg-[rgb(11,71,11)] text-white border-none cursor-pointer rounded-xl">Aktualizować</div>
+                                                        <div id={item._id} className="edit-element text-[20px] py-1.5 px-7 bg-[#36508d] text-white border-none cursor-pointer rounded-xl">Edytować Opis</div>
                                                     </Link>
                                                 </div>
-                                                <div className="profile-element mr-2 mb-2">
-                                                    <div id={item._id} onClick={(e) => deleteTest(e, item._id)} className="delete-element text-[20px] py-1.5 px-8 bg-[rgb(105,0,0)] text-white border-none cursor-pointer rounded-xl">Usunąć</div>
-                                                </div>
+                                                
                                             </>
                                             ) : null}
+                                            
                                             <div className="profile-element mr-2 mb-2">
                                                 <Link to={`/${item._id}/table`} onClick={() => {
                                                     try {
@@ -329,9 +328,16 @@ export const UserPage = () => {
                                                         console.log(err);
                                                     }
                                                 }}>
-                                                    <div id={item._id} className="table-element text-[20px] py-1.5 px-7 bg-[#5b48c2] text-white border-none cursor-pointer rounded-xl">Tabela</div>
+                                                    <div id={item._id} className="table-element text-[20px] py-1.5 px-7 bg-[#36508d] text-white border-none cursor-pointer rounded-xl">{ userId === item.userId || status === "admin" ? "Edytować Tabelę" : "Pokaż Tabelę"}</div>
                                                 </Link>
                                             </div>
+                                            
+                                            { userId === item.userId || status === "admin" ? (
+                                                <>
+                                                    <div className="profile-element mr-2 mb-2">
+                                                        <div id={item._id} onClick={(e) => deleteTest(e, item._id)} className="delete-element text-[20px] py-1.5 px-8 bg-[rgb(105,0,0)] text-white border-none cursor-pointer rounded-xl">Usunąć Test</div>
+                                                    </div>
+                                                </>) : null}
                                             <div className="profile-element mr-2 mb-2">
                                                 <Link to={`/${item._id}/tester`} onClick={() => {
                                                     try {
@@ -341,7 +347,7 @@ export const UserPage = () => {
                                                         console.log(err);
                                                     }
                                                 }}>
-                                                    <div id={item._id} className="table-element text-[20px] py-1.5 px-7 bg-[#5b48c2] text-white border-none cursor-pointer rounded-xl">Start</div>
+                                                    <div id={item._id} className="start-element text-[20px] py-1.5 px-7 text-white border-none cursor-pointer rounded-xl">Start</div>
                                                 </Link>
                                             </div>
                                         </div>

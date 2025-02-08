@@ -129,7 +129,7 @@ export const TesterSettingsPage = () => {
     }
 
     return <>
-        <header className="flex flex-col bg-[#1e1e1e] p-3.5 text-white text-[28px] select-none fixed w-screen z-10">
+        <header className="flex flex-col header p-3.5 text-white text-[28px] select-none fixed w-screen z-10">
             <nav>
                 <div className="flex items-start">
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
@@ -137,7 +137,7 @@ export const TesterSettingsPage = () => {
                         <Link to={`/${localStorage.getItem("test")}/tester`} onClick={() => {
                             localStorage.removeItem("randIndex");
                         }}>
-                            <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
+                            <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                                 Wrócić
                             </div>
                         </Link>

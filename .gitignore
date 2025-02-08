@@ -18,6 +18,7 @@ Thumbs.db
 # Build artifacts
 dist/
 build/
+uploads/
 
 # Temporary files
 *.tmp

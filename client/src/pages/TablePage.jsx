@@ -123,13 +123,13 @@ export const TablePage = () => {
     }
 
     return <>
-        <header className="flex flex-col bg-[#1e1e1e] p-3.5 text-white text-[28px] select-none fixed w-screen z-10">
+        <header className="flex flex-col header p-3.5 text-white text-[28px] select-none fixed w-screen z-10">
             <nav>
                 <div className="flex items-start">
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
                     <div className="ml-auto relative inline-block">
                         <Link to={`/`}>
-                            <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
+                            <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                                 Wrócić
                             </div>
                         </Link>
@@ -141,7 +141,7 @@ export const TablePage = () => {
                         <div className="profile-element">
                             <Link to={`/${localStorage.getItem("test")}/table/new`}>
                                 <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
-                                    Dodać
+                                    Dodać Dane
                                 </div>
                             </Link>
                         </div>
@@ -152,7 +152,7 @@ export const TablePage = () => {
         { (status === "user" || autor === "no") ? (
             <main className={`relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px]`}>
             {datas.length === 0 ? (
-                <p className="font-bold text-indigo-600">Nie ma danych</p>
+                <p className="font-bold text-indigo-600"></p>
             ) : (
                 <div>
                     {
@@ -180,7 +180,7 @@ export const TablePage = () => {
         ) : (
             <main className={`mainDev relative p-2 text-white text-[24px] w-screen flex flex-col`}>
             {datas.length === 0 ? (
-                <p className="font-bold text-indigo-600">Dodaj Dane</p>
+                <p className="font-bold text-indigo-600"></p>
             ) : (
                 <div>
                     {
@@ -213,7 +213,7 @@ export const TablePage = () => {
                                                 console.log(err);
                                             }
                                         }}>
-                                            <div id={item.data._id} className="edit-element text-[20px] py-1.5 px-7 bg-[rgb(11,71,11)] text-white border-none cursor-pointer rounded-xl">Aktualizować</div>
+                                            <div id={item.data._id} className="edit-element text-[20px] py-1.5 px-7 bg-[#36508d] text-white border-none cursor-pointer rounded-xl">Edytować</div>
                                         </Link>
                                     </div>
                                     <div className="profile-element mr-2 mb-2">

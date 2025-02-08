@@ -61,18 +61,20 @@ export const LoginPage = () => {
     return (
         <>
             <header>
-                <nav className="flex bg-[#1e1e1e] p-3.5 text-white text-[28px] items-center select-none">
+                <nav className="flex header p-3.5 text-white text-[28px] items-center select-none">
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
                     <div className="ml-auto relative inline-block">
                         <Link to='/register' className="profile-element mt-4">
-                            <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
+                            <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                                 Sign Up
                             </div>
                         </Link>
                     </div>
                 </nav>
             </header>
-            <form onSubmit={handleLogin} className='auth flex flex-col justify-center items-center text-white'>
+            <form onSubmit={handleLogin} className='auth flex flex-col justify-start pt-4 items-center text-white'>
+                <br></br>
+                <br></br>
                 <div className="element flex flex-col mb-1 m-0">
                     <p className="title text-indigo-600 text-3xl font-bold">Logowanie</p>
                 </div>

@@ -18,7 +18,7 @@ export const TesterPage = () => {
     const [numbers, setNumbers] = useState(JSON.parse(localStorage.getItem("numbers")) || []);
     const [randIndex, setRandIndex] = useState(localStorage.getItem("randIndex") || 0);
     const [data1Name, setData1Name] = useState(localStorage.getItem("data1Name") || "Autor");
-    const [data2Name, setData2Name] = useState(localStorage.getItem("data2Name") || "Autor");
+    const [data2Name, setData2Name] = useState(localStorage.getItem("data2Name") || "Nazwa");
     const [userAutorAnswer, setUserAutorAnswer] = useState("");
     const [userNameAnswer, setUserNameAnswer] = useState("");
 
@@ -337,7 +337,7 @@ export const TesterPage = () => {
     }
 
     return <>
-        <header className="flex flex-col bg-[#1e1e1e] p-3.5 text-white text-[28px] select-none fixed w-screen z-10">
+        <header className="flex flex-col header p-3.5 text-white text-[28px] select-none fixed w-screen z-10">
             <nav>
                 <div className="flex items-start">
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
@@ -352,7 +352,7 @@ export const TesterPage = () => {
                                 localStorage.removeItem("typeTester");
                                 localStorage.removeItem("answers");
                             }}>
-                            <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
+                            <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                                 Wrócić
                             </div>
                         </Link>

@@ -16,6 +16,10 @@
     }
 }
 
+.header {
+    background-color: rgb(27,27,86) !important;
+}
+
 img.userPage {
     background-repeat: no-repeat;
     border-radius: 50%;
@@ -71,20 +75,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .scroll-bar-hidden::-webkit-sc
     display: none !important;
 }
 
-.edit-element:hover {
-    background-color: rgb(15, 86, 15)
-}
-
-.delete-element:hover {
-    background-color: rgb(120, 0, 0);
-}
-
 .btnsLP {
     justify-content: flex-start;
 }
 
-.btnUser:hover, .table-element:hover {
-    background-color:#50448b;
+.btnUser:hover, .table-element:hover, .delete-element:hover, .edit-element:hover, .btn-exit:hover {
+    background-color:#685bab;
+}
+
+.btnUser {
+    font-size: 1.5rem;
+}
+
+.btn-exit {
+    font-size: 20px;
 }
 
 form.auth {
@@ -100,7 +104,7 @@ form.auth {
 }
 
 .mainDev {
-    top: 115px;
+    top: 125px;
 }
 
 main {
@@ -151,6 +155,14 @@ textarea, .progressBar {
     word-break: break-word;
 }
 
+.start-element {
+    background-color: rgb(26 102 26);
+}
+
+.start-element:hover {
+    background-color: rgb(50, 139, 50);
+}
+
 @media only screen and (max-width: 600px) {
     .updated {
         flex-direction: column;
@@ -193,14 +205,6 @@ textarea, .progressBar {
     .passImg {
         top: 8px !important;
         right: 8px !important;
-    }
-
-    .btnUser {
-        font-size: 1.5rem !important;
-    }
-
-    .btnsLP {
-        justify-content: center;
     }
 
     .lp-element {

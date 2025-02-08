@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 
 export const RegisterPage = () => {
     const navigate = useNavigate();
+    const [opis, setOpis] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [cpassword, setCPassword] = useState('');
@@ -30,7 +31,7 @@ export const RegisterPage = () => {
             if (username === "Admin")
                 status = "admin"
 
-            const response = await axiosAuthInstance.post('/register', { username, password, status }, { withCredentials: true });
+            const response = await axiosAuthInstance.post('/register', { username, password, status, opis }, { withCredentials: true });
 
             Swal.fire({
                 title: "Rejestracja",
@@ -60,17 +61,19 @@ export const RegisterPage = () => {
 
     return (
         <>
-            <nav className="flex bg-[#1e1e1e] p-3.5 text-white text-[28px] items-center select-none">
+            <nav className="flex header p-3.5 text-white text-[28px] items-center select-none">
                 <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
                 <div className="ml-auto relative inline-block">
                     <Link to='/' className="profile-element mt-4">
-                        <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
+                        <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                             Sign In
                         </div>
                     </Link>
                 </div>
             </nav>
-            <form onSubmit={handleRegister} className="auth flex flex-col justify-center items-center text-white h-[calc(100vh-64px)]">
+            <form onSubmit={handleRegister} className="auth flex flex-col justify-start pt-4 items-center text-white h-[calc(100vh-64px)]">
+                <br></br>
+                <br></br>
                 <div className="element flex flex-col mb-1 m-0">
                     <p className="title text-indigo-600 text-3xl font-bold">Rejestracja</p>
                 </div>
@@ -91,6 +94,10 @@ export const RegisterPage = () => {
                         <input type={cpasswordType} id="cpassword" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={cpassword} onChange={(e) => setCPassword(e.target.value)} placeholder="Enter Confirm Password" name="password" required />
                         <img id="passwordImg" onClick={(e) => setCPasswordType(show_hide_password(e.target, "cpassword"))} src="password-view.svg" className="passImg absolute top-[6px] right-[10px] inline-block w-7 h-7 cursor-pointer" alt="view password" />
                     </div>
+                </div>
+                <div className="element flex flex-col mb-3 m-0">
+                    <label htmlFor="opis" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-user"></i><b>Opis</b></label>
+                    <input type="text" id="opis" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={opis} onChange={(e) => setOpis(e.target.value)} placeholder="Enter Username" name="username" required />
                 </div>
                 <div className="element flex flex-col mb-3 m-0">
                     <button type="submit" className="auth bg-[#5b48c2] text-white p-2 border-none cursor-pointer w-[140px] text-2xl" name="login_btn">Sign Up</button>
