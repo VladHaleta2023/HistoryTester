@@ -31,12 +31,12 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'uploads',
-    filename: (req, file, cb) => {
+    public_id: (req, file) => {
       const userId = req.userId;
       const fileExtension = path.extname(file.originalname);
       const timestamp = Date.now();
       const fileName = `${userId}_${timestamp}${fileExtension}`;
-      cb(null, fileName);
+      return fileName;
     }
   }
 });
