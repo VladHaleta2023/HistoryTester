@@ -10,7 +10,6 @@ import Swal from 'sweetalert2';
 
 export const RegisterPage = () => {
     const navigate = useNavigate();
-    const [opis, setOpis] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [cpassword, setCPassword] = useState('');
@@ -31,7 +30,7 @@ export const RegisterPage = () => {
             if (username === "Admin")
                 status = "admin"
 
-            const response = await axiosAuthInstance.post('/register', { username, password, status, opis }, { withCredentials: true });
+            const response = await axiosAuthInstance.post('/register', { username, password, status }, { withCredentials: true });
 
             Swal.fire({
                 title: "Rejestracja",
@@ -94,10 +93,6 @@ export const RegisterPage = () => {
                         <input type={cpasswordType} id="cpassword" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={cpassword} onChange={(e) => setCPassword(e.target.value)} placeholder="Enter Confirm Password" name="password" required />
                         <img id="passwordImg" onClick={(e) => setCPasswordType(show_hide_password(e.target, "cpassword"))} src="password-view.svg" className="passImg absolute top-[6px] right-[10px] inline-block w-7 h-7 cursor-pointer" alt="view password" />
                     </div>
-                </div>
-                <div className="element flex flex-col mb-3 m-0">
-                    <label htmlFor="opis" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-user"></i><b>Opis</b></label>
-                    <input type="text" id="opis" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={opis} onChange={(e) => setOpis(e.target.value)} placeholder="Enter Username" name="username" required />
                 </div>
                 <div className="element flex flex-col mb-3 m-0">
                     <button type="submit" className="auth bg-[#5b48c2] text-white p-2 border-none cursor-pointer w-[140px] text-2xl" name="login_btn">Sign Up</button>

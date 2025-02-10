@@ -5,6 +5,10 @@ import Image from "../models/image.js";
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+import cloudinary from 'cloudinary';
+import fs from 'fs';
+import path from 'path';
 
 dotenv.config();
 
@@ -32,7 +36,8 @@ export const addTest = async (req, res) => {
         }
 
         if (req.file) {
-            const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
+            //const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
+            const imageUrl = req.file.path;
             const newTest = Test({
                 name,
                 data1Name,
@@ -97,6 +102,7 @@ export const updateTest = async (req, res) => {
                 });
             }
 
+            /*
             try {
                 const imageName = test.imageUrl.split('/uploads/')[1];
                 let imagePath = path.join(__dirname, '..', 'uploads', imageName);
@@ -113,8 +119,24 @@ export const updateTest = async (req, res) => {
                 });
             }
             catch {}
+            */
 
-            const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
+            try {
+                const oldImageUrl = test.imageUrl;
+                const imageId = oldImageUrl.split('/')[7].split('.')[0];
+
+                cloudinary.v2.uploader.destroy(imageId, (error, result) => {
+                    if (error) {
+                        console.log('Błąd Usuwania Obraza Fonowego Cloudinary:', error);
+                    } else {
+                        console.log('Usuwanie Obraza Fonowego Cloudinary udane:', result);
+                    }
+                });
+            }
+            catch {}
+
+            // const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
+            const imageUrl = req.file.path;
 
             await Test.findByIdAndUpdate(req.params.testId, {
                 name,
