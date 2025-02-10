@@ -1,9 +1,6 @@
 import { Router } from "express";
 import { addTest, getTests, getTest, deleteImage, updateTest, deleteTest, changeTestStatus } from "../controllers/test.js";
 import { checkAuth } from "../middleware/checkAuth.js";
-import upload from "../utils/upload.js";
-
-/*
 import path from "path";
 import multer from "multer";
 
@@ -32,7 +29,7 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
 });
-*/
+
 
 const router = new Router();
 

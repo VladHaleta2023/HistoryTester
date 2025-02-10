@@ -32,10 +32,8 @@ export const addTest = async (req, res) => {
         }
 
         if (req.file) {
-            //const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
+            const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
             
-            const imageUrl = req.file.path;
-            console.log(imageUrl);
             const newTest = Test({
                 name,
                 data1Name,
