@@ -5,10 +5,7 @@ import Image from "../models/image.js";
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
-import dotenv from 'dotenv';
 import cloudinary from 'cloudinary';
-import fs from 'fs';
-import path from 'path';
 
 dotenv.config();
 
