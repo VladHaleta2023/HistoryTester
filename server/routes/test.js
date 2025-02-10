@@ -1,12 +1,9 @@
 import { Router } from "express";
 import { addTest, getTests, getTest, deleteImage, updateTest, deleteTest, changeTestStatus } from "../controllers/test.js";
 import { checkAuth } from "../middleware/checkAuth.js";
-import multer from 'multer';
-import cloudinary from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import path from 'path';
+import path from "path";
+import multer from "multer";
 
-/*
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, 'uploads/');
@@ -18,27 +15,6 @@ const storage = multer.diskStorage({
         const fileName = `${userId}_${timestamp}${fileExtension}`;
         cb(null, fileName);
     },
-});
-*/
-
-cloudinary.config({
-  cloud_name: 'dp1yp82xe',
-  api_key: '561468265722954',
-  api_secret: 'BzJqZIREIjhMvb6Y5qX-H6hWdEM'
-});
-
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'uploads',
-    public_id: (req, file) => {
-      const userId = req.userId;
-      const fileExtension = path.extname(file.originalname);
-      const timestamp = Date.now();
-      const fileName = `${userId}_${timestamp}${fileExtension}`;
-      return fileName;
-    }
-  }
 });
 
 const fileFilter = (req, file, cb) => {
