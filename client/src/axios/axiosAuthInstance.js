@@ -2,7 +2,7 @@ import axios from 'axios';
 import store from '../redux/store.js';
 
 const axiosAuthInstance = axios.create({
-    baseURL: `https://historytester.onrender.com/api/auth`,
+    baseURL: `=https://historytester.onrender.com/api/auth`,
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',

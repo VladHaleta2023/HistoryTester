@@ -11,7 +11,17 @@ export const AddTestPage = () => {
     const [image, setImage] = useState(null);
 
     const onFileChange = (e) => {
-        setImage(e.target.files[0]);
+        const file = e.target.files[0];
+        if (file && file.type.startsWith("image/")) {
+            setImage(file);
+        } else {
+            Swal.fire({
+                title: "Błąd",
+                text: "Proszę wybrać poprawny plik graficzny",
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
+        }
     }
 
     const handleAddTest = async (e) => {

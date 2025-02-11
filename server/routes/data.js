@@ -1,21 +1,9 @@
 import { Router } from "express";
 import { addData, getDatas, getData, uploadImageData, deleteImageData, updateData, deleteData } from "../controllers/data.js";
 import { checkAuth } from "../middleware/checkAuth.js";
-import path from "path";
 import multer from "multer";
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        const userId = req.userId;
-        const fileExtension = path.extname(file.originalname);
-        const timestamp = Date.now();
-        const fileName = `${userId}_${timestamp}${fileExtension}`;
-        cb(null, fileName);
-    },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image/')) {

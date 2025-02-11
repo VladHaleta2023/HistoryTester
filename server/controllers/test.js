@@ -3,13 +3,16 @@ import Test from "../models/test.js";
 import Data from "../models/data.js";
 import Image from "../models/image.js";
 import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
+import cloudinary from "cloudinary";
+import streamifier from 'streamifier';
 
 dotenv.config();
 
-const __filename = new URL(import.meta.url).pathname;
-const __dirname = path.dirname(__filename);
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 export const addTest = async (req, res) => {
     try {
@@ -31,28 +34,39 @@ export const addTest = async (req, res) => {
             });
         }
 
+        let imageUrl = null;
+
         if (req.file) {
-            const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
-            
-            const newTest = Test({
-                name,
-                data1Name,
-                data2Name,
-                userId: user._id,
-                imageUrl
-            });
+            const uploadStream = cloudinary.v2.uploader.upload_stream(
+                { resource_type: 'auto', folder: 'uploads' },
+                async (error, result) => {
+                    if (error) {
+                        console.log(`Cloudinary error: ${error}`);
+                        return res.status(500).json({ message: "Błąd przesyłania obrazu" });
+                    }
 
-            await newTest.save();
+                    imageUrl = result.secure_url;
 
-            return res.status(200).json({
-                message: "Dodawanie testa udane",
-                test: {
-                    ...newTest._doc
+                    const newTest = new Test({
+                        name,
+                        data1Name,
+                        data2Name,
+                        userId: user._id,
+                        imageUrl
+                    });
+
+                    await newTest.save();
+
+                    return res.status(200).json({
+                        message: "Dodawanie testa udane",
+                        test: newTest
+                    });
                 }
-            });
-        }
-        else {
-            const newTest = Test({
+            );
+
+            streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        } else {
+            const newTest = new Test({
                 name,
                 data1Name,
                 data2Name,
@@ -63,9 +77,7 @@ export const addTest = async (req, res) => {
 
             return res.status(200).json({
                 message: "Dodawanie testa udane",
-                test: {
-                    ...newTest._doc
-                }
+                test: newTest
             });
         }
     }
@@ -82,69 +94,58 @@ export const updateTest = async (req, res) => {
         const user = await User.findById(req.userId);
 
         if (!user) {
-            return res.status(400).json({
-                message: "Użytkownik nie znaleziony"
-            });
+            return res.status(400).json({ message: "Użytkownik nie znaleziony" });
         }
 
         const { name, data1Name, data2Name } = req.body;
+        const test = await Test.findById(req.params.testId);
+
+        if (!test) {
+            return res.status(400).json({ message: "Test nie znaleziony" });
+        }
+
+        let imageUrl = test.imageUrl;
 
         if (req.file) {
-            const test = await Test.findById(req.params.testId);
-
-            if (!test) {
-                return res.status(400).json({
-                    message: "Test nie znaleziony"
-                });
+            if (test.imageUrl) {
+                const publicId = test.imageUrl.split('/').slice(-2).join('/').split('.')[0];
+                await cloudinary.v2.uploader.destroy(publicId);
             }
 
-            try {
-                const imageName = test.imageUrl.split('/uploads/')[1];
-                let imagePath = path.join(__dirname, '..', 'uploads', imageName);
-                imagePath = imagePath.replace(/^\\/, '');
-
-                if (!fs.existsSync(imagePath)) {
-                    console.log("Obraza Fonowego nie znaleziono");
-                }
-
-                fs.unlink(imagePath, async (err) => {
-                    if (err) {
-                        console.log(`Server error: ${err}`);
+            const uploadStream = cloudinary.v2.uploader.upload_stream(
+                { resource_type: 'auto', folder: 'uploads' },
+                async (error, result) => {
+                    if (error) {
+                        console.log(`Cloudinary error: ${error}`);
+                        return res.status(500).json({ message: "Błąd przesyłania obrazu" });
                     }
-                });
-            }
-            catch {}
 
-            const imageUrl = `https://historytester.onrender.com/uploads/${req.file.filename}`;
+                    imageUrl = result.secure_url;
 
+                    await Test.findByIdAndUpdate(req.params.testId, {
+                        name,
+                        data1Name,
+                        data2Name,
+                        imageUrl
+                    });
+
+                    return res.status(200).json({ message: "Aktualizacja testa udana" });
+                }
+            );
+
+            streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        } else {
             await Test.findByIdAndUpdate(req.params.testId, {
                 name,
                 data1Name,
                 data2Name,
-                imageUrl
             });
 
-            return res.status(200).json({
-                message: "Aktualizacja testa udana"
-            });
+            return res.status(200).json({ message: "Aktualizacja testa udana" });
         }
-        else {
-            await Test.findByIdAndUpdate(req.params.testId, {
-                name,
-                data1Name,
-                data2Name,
-            });
-
-            return res.status(200).json({
-                message: "Aktualizacja testa udana"
-            });
-        }
-    }
-    catch (err) {
+    } catch (err) {
         console.log(`Server error: ${err}`);
-        return res.status(500).json({
-            message: `Server error: ${err}`
-        });
+        return res.status(500).json({ message: `Server error: ${err}` });
     }
 }
 
@@ -245,102 +246,62 @@ export const deleteImage = async (req, res) => {
         const user = await User.findById(req.userId);
 
         if (!user) {
-            return res.status(400).json({
-                message: "Użytkownik nie znaleziony"
-            });
+            return res.status(400).json({ message: "Użytkownik nie znaleziony" });
         }
 
         const test = await Test.findById(req.params.testId);
 
         if (!test) {
-            return res.status(400).json({
-                message: "Test nie znaleziony"
-            });
+            return res.status(400).json({ message: "Test nie znaleziony" });
         }
 
-        if (!test.imageUrl || test.imageUrl === null || test.imageUrl === "null") {
-            return res.status(400).json({
-                message: "Obraza Fonowego nie znaleziono"
-            });
+        if (!test.imageUrl) {
+            return res.status(400).json({ message: "Obraza Fonowego nie znaleziono" });
         }
 
-        const imageName = test.imageUrl.split('/uploads/')[1];
-        let imagePath = path.join(__dirname, '..', 'uploads', imageName);
-        imagePath = imagePath.replace(/^\\/, '');
+        const publicId = test.imageUrl.split('/').slice(-2).join('/').split('.')[0];
 
-        if (!fs.existsSync(imagePath)) {
-            return res.status(400).json({
-                message: "Obraza Fonowego nie znaleziono"
-            });
+        const result = await cloudinary.v2.uploader.destroy(publicId);
+
+        if (result.result === 'ok') {
+            await Test.findByIdAndUpdate(test._id, { imageUrl: null });
+
+            return res.status(200).json({ message: "Usuwanie Obraza Fonowego udane" });
+        } else {
+            return res.status(500).json({ message: "Nie udało się usunąć obrazu" });
         }
-
-        fs.unlink(imagePath, async (err) => {
-            if (err) {
-                console.log(`Server error: ${err}`);
-                return res.status(500).json({
-                    message: `Błąd Usuwania Obraza Fonowego: ${err}`
-                });
-            }
-            else {
-                await Test.findByIdAndUpdate(test._id, { imageUrl: null });
-                return res.status(200).json({
-                    message: `Usuwanie Obraza Fonowego udane`
-                });
-            }
-        });
-      } 
-      catch (err) {
+    } catch (err) {
         console.log(`Server error: ${err}`);
-        return res.status(500).json({
-            message: `Server error: ${err}`
+        return res.status(500).json({ 
+            message: `Server error: ${err}` 
         });
     }
-}
+};
 
 const deleteData = async (dataId) => {
     try {
         const data = await Data.findById(dataId);
-
         if (!data) {
-            return res.status(400).json({
-                message: "Dane nie znalezione"
-            });
+            console.log("Dane nie znalezione");
+            return;
         }
 
         const images = await Image.find({ dataId: data._id });
 
-        for (let i = 0; i < images.length; i++) {
-            let image = images[i];
-
-            if (!image || !image.imageUrl || image.imageUrl === null || image.imageUrl === "null") {
-                console.log("Obraz nie znaleziony");
-            }
-    
-            try {
-                const imageName = image.imageUrl.split('/uploads/')[1];
-                let imagePath = path.join(__dirname, '..', 'uploads', imageName);
-                imagePath = imagePath.replace(/^\\/, '');
-    
-                if (!fs.existsSync(imagePath)) {
-                    console.log("Obraz nie znaleziony");
+        for (let image of images) {
+            if (image && image.imageUrl) {
+                try {
+                    const publicId = image.imageUrl.split('/').slice(-2).join('/').split('.')[0];
+                    await cloudinary.v2.uploader.destroy(publicId);
+                } catch (error) {
+                    console.log("Błąd usuwania obraza:", error);
                 }
-    
-                fs.unlink(imagePath, async (err) => {
-                    if (err) {
-                        console.log(`Server error: ${err}`);
-                    }
-                });
+                await Image.findByIdAndDelete(image._id);
             }
-            catch {
-                console.log("Usuwanie obraza nie udane");
-            }
-
-            await Image.findByIdAndDelete(image._id);
         }
 
         await Data.findByIdAndDelete(data._id);
-    }
-    catch (err) {
+    } catch (err) {
         console.log(`Server error: ${err}`);
     }
 }
@@ -365,30 +326,20 @@ export const deleteTest = async (req, res) => {
 
         const datas = await Data.find({ testId: test._id });
 
-        for (let i = 0; i < datas.length; i++)
-            deleteData(datas[i]._id);
-        
-        if (!test.imageUrl || test.imageUrl === null || test.imageUrl === "null") {
-            console.log("Obraz nie znaleziony");
+        for (let i = 0; i < datas.length; i++) {
+            await deleteData(datas[i]._id);
         }
-    
-        try {
-            const imageName = test.imageUrl.split('/uploads/')[1];
-            let imagePath = path.join(__dirname, '..', 'uploads', imageName);
-            imagePath = imagePath.replace(/^\\/, '');
 
-            if (!fs.existsSync(imagePath)) {
-                console.log("Obraz nie znaleziony");
+        if (test.imageUrl && test.imageUrl !== "null") {
+            try {
+                const publicId = test.imageUrl.split('/').slice(-2).join('/').split('.')[0];
+                await cloudinary.uploader.destroy(publicId);
+                console.log("Obraz usunięty");
+            } catch (error) {
+                console.log("Błąd usuwania obraza:", error);
             }
-
-            fs.unlink(imagePath, async (err) => {
-                if (err) {
-                    console.log(`Server error: ${err}`);
-                }
-            });
-        }
-        catch {
-            console.log("Usuwanie obraza nie udane");
+        } else {
+            console.log("Obraz nie znaleziony");
         }
 
         await Test.findByIdAndDelete(test._id);
