@@ -12,10 +12,12 @@ export const UpdateDataPage = () => {
     const [data2, setData2] = useState(localStorage.getItem("data2") || "");
     const [data1Name, setData1Name] = useState(localStorage.getItem("data1Name") || "Autor");
     const [data2Name, setData2Name] = useState(localStorage.getItem("data2Name") || "Nazwa");
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const main = document.getElementsByTagName("main")[0];
-        main.style.top = String(document.getElementsByTagName("header")[0].clientHeight) + "px";
+        main.style.top = `${document.getElementsByTagName("header")[0].clientHeight}px`;
+        main.style.height = `${window.innerHeight - document.getElementsByTagName("header")[0].clientHeight}px`;
 
         const fetchDataTest = async () => {
             try {
@@ -26,21 +28,12 @@ export const UpdateDataPage = () => {
                 localStorage.setItem("data2Name", fetchData.data2Name);
                 setData1Name(fetchData.data1Name);
                 setData2Name(fetchData.data2Name);
+
+                if (localStorage.getItem('auth') !== "true") navigate('/');
+            } catch (error) {
+                handleFetchError(error);
             }
-            catch (error) {
-                if (error.response) {
-                    const message = error.response.data.message;
-                    const status = error.response.status;
-                    if (localStorage.getItem('auth') === "true")
-                        showAlert(status, "Aktualizacja Testa", message);
-                }
-                else {
-                    console.error('Error:', error.message);
-                    if (localStorage.getItem('auth') === "true")
-                        showAlert(500, "Aktualizacja Testa", error.message);
-                }
-            }
-        }
+        };
 
         const fetchData = async () => {
             try {
@@ -52,29 +45,29 @@ export const UpdateDataPage = () => {
                 setData1(fetchData.data1);
                 setData2(fetchData.data2);
                 setImages(response.data.images);
+            } catch (error) {
+                setLoading(false);
+                handleFetchError(error);
+            } finally {
+                setLoading(false);
+                main.style.height = `${window.outerHeight - document.getElementsByTagName("header")[0].clientHeight}px`;
+                main.style.justifyContent = "flex-start";
             }
-            catch (error) {
-                if (error.response) {
-                    const message = error.response.data.message;
-                    const status = error.response.status;
-                    if (localStorage.getItem('auth') === "true")
-                        showAlert(status, "Aktualizacja Testa", message);
-                }
-                else {
-                    console.error('Error:', error.message);
-                    if (localStorage.getItem('auth') === "true")
-                        showAlert(500, "Aktualizacja Testa", error.message);
-                }
-            }
-        }
+        };
 
-        fetchDataTest();
-        fetchData();
-
-        const auth = localStorage.getItem('auth');
-        if (auth !== "true")
-            navigate('/');
+        fetchDataTest().then(fetchData);
     }, [navigate])
+
+    const handleFetchError = (error) => {
+        if (error.response) {
+            const message = error.response.data.message;
+            const status = error.response.status;
+            if (localStorage.getItem('auth') === "true") showAlert(status, "Aktualizacja Testa", message);
+        } else {
+            console.error('Error:', error.message);
+            if (localStorage.getItem('auth') === "true") showAlert(500, "Aktualizacja Testa", error.message);
+        }
+    }
 
     const addInputFile = () => {
         setFiles([...files, null]);
@@ -88,10 +81,22 @@ export const UpdateDataPage = () => {
     const handleUpdateData = async (e) => {
         e.preventDefault();
 
+        const loadingSwal = Swal.fire({
+            title: "Aktualizacja Danych",
+            text: "Trwa aktualizowanie danych...",
+            icon: 'info',
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         try {
             const formData = new FormData();
 
             if (!data1 || !data2 || data1 === null || data2 === null) {
+                loadingSwal.close();
+
                 Swal.fire({
                     title: "Aktualizacja Danych",
                     text: "Proszę wypełnić prawidłowe dane",
@@ -113,6 +118,8 @@ export const UpdateDataPage = () => {
                         await axiosTestInstance.put(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/images/${imageId}`, formData, { withCredentials: true });
                     }
                     catch (error) {
+                        loadingSwal.close();
+
                         if (error.response) {
                             const message = error.response.data.message;
                             if (localStorage.getItem('auth') === "true") {
@@ -161,6 +168,8 @@ export const UpdateDataPage = () => {
 
             const response = await axiosTestInstance.put(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/`, formData, { withCredentials: true });
 
+            loadingSwal.close();
+
             Swal.fire({
                 title: "Aktualizacja Danych",
                 text: response.data.message,
@@ -175,6 +184,8 @@ export const UpdateDataPage = () => {
             formData.delete('images');
         }
         catch (error) {
+            loadingSwal.close();
+            
             if (error.response) {
                 const message = error.response.data.message;
                 if (localStorage.getItem('auth') === "true") {
@@ -262,9 +273,21 @@ export const UpdateDataPage = () => {
 
           }).then(async (result) => {
             if (result.isConfirmed) {
+                const loadingSwal = Swal.fire({
+                    title: "Usuwanie Obraza",
+                    text: "Trwa usuwanie Obraza...",
+                    icon: 'info',
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/images/${imageId}`, { withCredentials: true });
                 
+                    loadingSwal.close();
+
                     Swal.fire({
                         title: "Usuwanie Obraza",
                         text: response.data.message,
@@ -278,6 +301,8 @@ export const UpdateDataPage = () => {
                     });
                 }
                 catch (error) {
+                    loadingSwal.close();
+
                     if (error.response) {
                         const message = error.response.data.message;
                         if (localStorage.getItem('auth') === "true") {
@@ -347,6 +372,12 @@ export const UpdateDataPage = () => {
             </nav>
         </header>
         <main className="relative p-2 text-white text-[24px] w-screen flex flex-col">
+            {loading ? (
+                <div>
+                    <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                    <div className="mt-2 text-white text-lg">Pobieranie...</div>
+                </div>
+            ) : (<>
             <div className="mt-6">
                 <div className="element flex flex-col mb-3 m-0">
                     <label htmlFor="data1" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>{data1Name}</b></label>
@@ -382,7 +413,7 @@ export const UpdateDataPage = () => {
                         </div>
                     </div>
                 ))}
-            </div>
+            </div></>)}
         </main>
     </>
 };

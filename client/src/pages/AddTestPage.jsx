@@ -27,10 +27,22 @@ export const AddTestPage = () => {
     const handleAddTest = async (e) => {
         e.preventDefault();
 
+        const loadingSwal = Swal.fire({
+            title: "Dodawanie Testa",
+            text: "Trwa dodawanie testa...",
+            icon: 'info',
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         try {
             const formData = new FormData();
 
             if (!name || !data1Name || !data2Name || name === "" || data1Name === "" || data2Name === "") {
+                loadingSwal.close();
+
                 Swal.fire({
                     title: "Dodawanie Testa",
                     text: "Proszę wypełnić prawidłowe dane",
@@ -49,6 +61,8 @@ export const AddTestPage = () => {
 
             const response = await axiosTestInstance.post('/', formData, { withCredentials: true });
 
+            loadingSwal.close();
+
             Swal.fire({
                 title: "Dodawanie Testa",
                 text: response.data.message,
@@ -62,6 +76,8 @@ export const AddTestPage = () => {
         catch (error) {
             if (error.response) {
                 const message = error.response.data.message;
+                loadingSwal.close();
+
                 if (localStorage.getItem('auth') === "true") {
                     Swal.fire({
                         title: "Dodawanie Testa",
@@ -78,6 +94,8 @@ export const AddTestPage = () => {
             }
             else {
                 console.error('Error:', error.message);
+                loadingSwal.close();
+                
                 if (localStorage.getItem('auth') === "true") {
                     Swal.fire({
                         title: "Dodawanie Testa",

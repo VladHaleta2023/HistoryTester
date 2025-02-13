@@ -11,14 +11,13 @@ export const AddDataPage = () => {
     const [data2, setData2] = useState("");
     const [data1Name, setData1Name] = useState(localStorage.getItem("data1Name") || "Autor");
     const [data2Name, setData2Name] = useState(localStorage.getItem("data2Name") || "Nazwa");
+    const [loading, setLoading] = useState(true);
+    const [dataId, setDataId] = useState(localStorage.getItem("dataLength") || 0);
 
     useEffect(() => {
         const main = document.getElementsByTagName("main")[0];
         main.style.top = String(document.getElementsByTagName("header")[0].clientHeight) + "px";
-
-        const auth = localStorage.getItem('auth');
-        if (auth !== "true")
-            navigate('/');
+        main.style.height = String(window.innerHeight - document.getElementsByTagName("header")[0].clientHeight) + "px";
 
         const fetchData = async () => {
             try {
@@ -29,8 +28,17 @@ export const AddDataPage = () => {
                 localStorage.setItem("data2Name", fetchData.data2Name);
                 setData1Name(fetchData.data1Name);
                 setData2Name(fetchData.data2Name);
+                setDataId(localStorage.getItem("dataLength") || 0);
+
+                const auth = localStorage.getItem('auth');
+                if (auth !== "true")
+                    navigate('/');
+
+                setLoading(false);
             }
             catch (error) {
+                setLoading(false);
+
                 if (error.response) {
                     const message = error.response.data.message;
                     const status = error.response.status;
@@ -42,6 +50,10 @@ export const AddDataPage = () => {
                     if (localStorage.getItem('auth') === "true")
                         showAlert(500, "Aktualizacja Testa", error.message);
                 }
+            }
+            finally {
+                main.style.height = String(window.innerHeight - document.getElementsByTagName("header")[0].clientHeight) + "px";
+                main.style.justifyContent = "flex-start";
             }
         }
 
@@ -57,8 +69,19 @@ export const AddDataPage = () => {
         setFiles(files);
     };
 
+    // Change
     const handleAddData = async (e) => {
         e.preventDefault();
+
+        const loadingSwal = Swal.fire({
+            title: "Dodawanie Danych",
+            text: "Trwa dodawanie danych...",
+            icon: 'info',
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
         try {
             const formData = new FormData();
@@ -72,6 +95,8 @@ export const AddDataPage = () => {
             formData.append('data2', data2);
 
             if (!data1 || !data2 || data1 === null || data2 === null) {
+                loadingSwal.close();
+
                 Swal.fire({
                     title: "Dodawanie Danych",
                     text: "Proszę wypełnić prawidłowe dane",
@@ -84,6 +109,8 @@ export const AddDataPage = () => {
 
             const response = await axiosTestInstance.post(`/${localStorage.getItem("test")}/data/`, formData, { withCredentials: true });
 
+            loadingSwal.close();
+
             Swal.fire({
                 title: "Dodawanie Danych",
                 text: response.data.message,
@@ -95,6 +122,8 @@ export const AddDataPage = () => {
             });
         }
         catch (error) {
+            loadingSwal.close();
+
             if (error.response) {
                 const message = error.response.data.message;
                 if (localStorage.getItem('auth') === "true") {
@@ -152,9 +181,9 @@ export const AddDataPage = () => {
                         const inputElement = document.getElementsByClassName("imageData")[index];
 
                         if (inputElement && file) {
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(file);
-                        inputElement.files = dataTransfer.files;
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            inputElement.files = dataTransfer.files;
                         }
                         else {
                             inputElement.value = '';
@@ -200,7 +229,19 @@ export const AddDataPage = () => {
             </nav>
         </header>
         <main className="relative p-2 text-white text-[24px] w-screen flex flex-col">
+            {loading ? (
+                <div>
+                    <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                    <div className="mt-2 text-white text-lg">Pobieranie...</div>
+                </div>
+            ) : (<>
             <div className="mt-6">
+                <div className="element flex flex-col mb-3 m-0">
+                    <label htmlFor="dataId" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>Data Id</b></label>
+                    <input type="text" id="dataId" className="bg-slate-400 mb-1 p-2 border border-gray-400 rounded-md w-[600px] text-black text-[1.2rem]" value={Number(dataId) + 1} placeholder="DataId" name="dataId" readOnly />
+                </div>
+            </div>
+            <div className="mt-2">
                 <div className="element flex flex-col mb-3 m-0">
                     <label htmlFor="data1" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>{data1Name}</b></label>
                     <input type="text" id="data1" className="bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data1} onChange={(e) => setData1(e.target.value)} placeholder="Pierwsza Kolumna" name="data1" required />
@@ -224,7 +265,7 @@ export const AddDataPage = () => {
                         </div>
                     </div>
                 ))}
-            </div>
+            </div></>)}
         </main>
     </>
 };

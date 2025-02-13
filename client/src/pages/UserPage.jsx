@@ -14,19 +14,32 @@ export const UserPage = () => {
     const [status, setStatus] = useState(auth?.user?.status || "user");
     const [tests, setTests] = useState([]);
     const [userId, setUserId] = useState(auth?.user?._id || null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        localStorage.clear();
         setStatus(auth?.user?.status || "user");
         setUserId(auth?.user?._id || null);
         localStorage.setItem("user", auth?.user?._id || null);
         localStorage.setItem("status", auth?.user?.status || "user");
+        localStorage.setItem('auth', auth?.isAuthenticated || false);
 
         const fetchData = async () => {
             try {
                 const response = await axiosTestInstance.get("/");
                 setTests(response.data.tests);
+
+                const isAuth = localStorage.getItem('auth');
+                if (isAuth !== "true") {
+                    navigate('/');
+                }
+                else {
+                    setLoading(false);
+                }
             } 
             catch (error) {
+                setLoading(false);
+                
                 if (error.response) {
                     const message = error.response.data.message;
                     const status = error.response.status;
@@ -42,10 +55,6 @@ export const UserPage = () => {
         }
 
         fetchData();
-
-        const isAuth = localStorage.getItem('auth');
-        if (isAuth !== "true")
-            navigate('/');
     }, [auth, navigate]);
 
     const handleSignOut = async (e) => {
@@ -100,8 +109,20 @@ export const UserPage = () => {
 
           }).then(async (result) => {
             if (result.isConfirmed) {
+                const loadingSwal = Swal.fire({
+                    title: "Usuwanie Testa",
+                    text: "Trwa usuwanie testa...",
+                    icon: 'info',
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}`);
+
+                    loadingSwal.close();
 
                     Swal.fire({
                         title: "Usuwanie Testa",
@@ -118,6 +139,8 @@ export const UserPage = () => {
                 catch (error) {
                     if (error.response) {
                         const message = error.response.data.message;
+                        loadingSwal.close();
+
                         if (localStorage.getItem('auth') === "true") {
                             Swal.fire({
                                 title: "Usuwanie Testa",
@@ -134,6 +157,8 @@ export const UserPage = () => {
                     }
                     else {
                         console.error('Error:', error.message);
+                        loadingSwal.close();
+
                         if (localStorage.getItem('auth') === "true") {
                             Swal.fire({
                                 title: "Usuwanie Testa",
@@ -200,6 +225,12 @@ export const UserPage = () => {
                 </div>) : null}
             </nav>
         </header>
+        {loading ? (
+            <div className="flex flex-col justify-center items-center h-screen">
+                <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                <div className="mt-2 text-white text-lg">Pobieranie...</div>
+            </div>
+        ) : (<>
         { status === "user" ? (
             <main className={`relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px]`}>
             {tests.length === 0 ? (
@@ -359,5 +390,5 @@ export const UserPage = () => {
                 )}
             </main>
         )}
-    </>
+    </>)}</>
 }

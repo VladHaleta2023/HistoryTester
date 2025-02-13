@@ -146,7 +146,9 @@ export const getDatas = async (req, res) => {
             });
         }
 
-        const datas = await Data.find({ testId: test._id });
+        const datas = await Data.find({ testId: test._id })
+            .collation({ locale: "pl", strength: 2 })
+            .sort({ data1: 1, data2: 1 });
         let fetchData = [];
 
         for (let i = 0; i < datas.length; i++) {

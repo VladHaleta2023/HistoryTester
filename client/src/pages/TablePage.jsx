@@ -11,6 +11,7 @@ export const TablePage = () => {
     const [status, setStatus] = useState(localStorage.getItem("status") || "user");
     const [autor, setAutor] = useState(localStorage.getItem("autor") || "no");
     const [datas, setDatas] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setStatus(localStorage.getItem("status") || "user");
@@ -20,6 +21,14 @@ export const TablePage = () => {
             try {
                 const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}/data/`);
                 setDatas(response.data.datas);
+
+                const isAuth = localStorage.getItem('auth');
+                if (isAuth !== "true") {
+                    navigate('/');
+                }
+                else {
+                    setLoading(false);
+                }
             } 
             catch (error) {
                 if (error.response) {
@@ -33,14 +42,12 @@ export const TablePage = () => {
                     if (localStorage.getItem('auth') === true)
                         showAlert(500, "Server", error.message);
                 }
+
+                setLoading(false);
             }
         }
 
         fetchData();
-
-        const isAuth = localStorage.getItem('auth');
-        if (isAuth !== "true")
-            navigate('/');
     }, [auth, navigate]);
 
     const getDate = (date) => {
@@ -69,8 +76,20 @@ export const TablePage = () => {
 
           }).then(async (result) => {
             if (result.isConfirmed) {
+                const loadingSwal = Swal.fire({
+                    title: "Usuwanie Dancyh",
+                    text: "Trwa usuwanie danych...",
+                    icon: 'info',
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/data/${dataId}/`);
+
+                    loadingSwal.close();
 
                     Swal.fire({
                         title: "Usuwanie Danych",
@@ -85,6 +104,8 @@ export const TablePage = () => {
                     });
                 }
                 catch (error) {
+                    loadingSwal.close();
+                    
                     if (error.response) {
                         const message = error.response.data.message;
                         if (localStorage.getItem('auth') === "true") {
@@ -139,7 +160,9 @@ export const TablePage = () => {
                 <div className="ml-0 flex items-center justify-start mt-4">
                     <div className="relative inline-block mr-2">
                         <div className="profile-element">
-                            <Link to={`/${localStorage.getItem("test")}/table/new`}>
+                            <Link to={`/${localStorage.getItem("test")}/table/new`} onClick={() => {
+                                localStorage.setItem("dataLength", datas.length);
+                            }}>
                                 <div className="btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                                     Dodać Dane
                                 </div>
@@ -149,6 +172,12 @@ export const TablePage = () => {
                 </div>) : null}
             </nav>
         </header>
+        {loading ? (
+                <div className="flex flex-col justify-center items-center h-screen">
+                    <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                    <div className="mt-2 text-white text-lg">Pobieranie...</div>
+                </div>
+            ) : (<>
         { (status === "user" || autor === "no") ? (
             <main className={`relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px]`}>
             {datas.length === 0 ? (
@@ -158,6 +187,7 @@ export const TablePage = () => {
                     {
                         datas.map((item, index) => (
                             <div key={index} id={item.data._id} className="lp-element my-2 py-3 px-5 bg-[#181d28] rounded-xl">
+                                <div className="flex flex-wrap dataLP text-white">{index + 1}/{datas.length}</div>
                                 <div className="tableImages font-bold text-indigo-600 break-words text-3xl mt-2">
                                     { item.images.map((imageUrl, index) => (
                                         <img key={index} src={imageUrl} alt="Obraz" className="tablePage mb-2" />
@@ -186,6 +216,7 @@ export const TablePage = () => {
                     {
                         datas.map((item, index) => (
                             <div key={index} id={item.data._id} className="lp-element my-2 py-3 px-5 bg-[#181d28] rounded-xl">
+                                <div className="flex flex-wrap dataLP text-white text-3xl">{index + 1}/{datas.length}</div>
                                 <div className="tableImages font-bold text-indigo-600 break-words text-3xl mt-2">
                                     { item.images.map((imageUrl, index) => (
                                         <img key={index} src={imageUrl} alt="Obraz" className="tablePage mb-1" />
@@ -226,6 +257,5 @@ export const TablePage = () => {
                 </div>
             )}
             </main>
-        )}
-    </>
+        )}</>)}</>
 }

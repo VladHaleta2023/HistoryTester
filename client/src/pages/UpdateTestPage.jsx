@@ -11,6 +11,7 @@ export const UpdateTestPage = () => {
     const [data2Name, setData2Name] = useState(localStorage.getItem("data2Name") || "Nazwa");
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const onFileChange = (e) => {
         setImage(e.target.files[0]);
@@ -19,10 +20,22 @@ export const UpdateTestPage = () => {
     const handleUpdateTest = async (e) => {
         e.preventDefault();
 
+        const loadingSwal = Swal.fire({
+            title: "Aktualizacja Testa",
+            text: "Trwa aktualizowanie testa...",
+            icon: 'info',
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         try {
             const formData = new FormData();
 
             if (!name || !data1Name || !data2Name || name === "" || data1Name === "" || data2Name === "") {
+                loadingSwal.close();
+
                 Swal.fire({
                     title: "Aktualizacja Testa",
                     text: "Proszę wypełnić prawidłowe dane",
@@ -41,6 +54,8 @@ export const UpdateTestPage = () => {
 
             const response = await axiosTestInstance.put(`/${localStorage.getItem("test")}`, formData, { withCredentials: true });
 
+            loadingSwal.close();
+
             Swal.fire({
                 title: "Aktualizacja Testa",
                 text: response.data.message,
@@ -55,6 +70,8 @@ export const UpdateTestPage = () => {
         catch (error) {
             if (error.response) {
                 const message = error.response.data.message;
+                loadingSwal.close();
+
                 if (localStorage.getItem('auth') === "true") {
                     Swal.fire({
                         title: "Aktualizacja Testa",
@@ -68,6 +85,8 @@ export const UpdateTestPage = () => {
             }
             else {
                 console.error('Error:', error.message);
+                loadingSwal.close();
+
                 if (localStorage.getItem('auth') === "true") {
                     Swal.fire({
                         title: "Aktualizacja Testa",
@@ -85,10 +104,7 @@ export const UpdateTestPage = () => {
     useEffect(() => {
         const main = document.getElementsByTagName("main")[0];
         main.style.top = String(document.getElementsByTagName("header")[0].clientHeight) + "px";
-
-        const auth = localStorage.getItem('auth');
-        if (auth !== "true")
-            navigate('/');
+        main.style.height = String(window.innerHeight - document.getElementsByTagName("header")[0].clientHeight) + "px";
 
         const fetchData = async () => {
             try {
@@ -103,8 +119,16 @@ export const UpdateTestPage = () => {
                 setData1Name(fetchData.data1Name);
                 setData2Name(fetchData.data2Name);
                 setImageUrl(fetchData.imageUrl);
+
+                const auth = localStorage.getItem('auth');
+                if (auth !== "true")
+                    navigate('/');
+
+                setLoading(false);
             }
             catch (error) {
+                setLoading(false);
+
                 if (error.response) {
                     const message = error.response.data.message;
                     const status = error.response.status;
@@ -116,6 +140,10 @@ export const UpdateTestPage = () => {
                     if (localStorage.getItem('auth') === "true")
                         showAlert(500, "Aktualizacja Testa", error.message);
                 }
+            }
+            finally {
+                main.style.height = String(window.outerHeight - document.getElementsByTagName("header")[0].clientHeight) + "px";
+                main.style.justifyContent = "flex-start";
             }
         }
 
@@ -136,8 +164,20 @@ export const UpdateTestPage = () => {
 
           }).then(async (result) => {
             if (result.isConfirmed) {
+                const loadingSwal = Swal.fire({
+                    title: "Usuwanie Obraza Fonowego",
+                    text: "Trwa usuwanie Obraza Fonowego...",
+                    icon: 'info',
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/image`);
+
+                    loadingSwal.close();
 
                     Swal.fire({
                         title: "Usuwanie Obraza Fonowego",
@@ -152,6 +192,8 @@ export const UpdateTestPage = () => {
                     });
                 }
                 catch (error) {
+                    loadingSwal.close();
+
                     if (error.response) {
                         const message = error.response.data.message;
                         const status = error.response.status;
@@ -192,7 +234,13 @@ export const UpdateTestPage = () => {
                 </div>
             </nav>
         </header>
-        <main className="relative p-2 text-white text-[24px] w-screen flex flex-col">
+        <main className="relative p-2 text-white text-[24px] w-screen flex flex-col justify-center">
+            {loading ? (
+                <div>
+                    <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                    <div className="mt-2 text-white text-lg">Pobieranie...</div>
+                </div>
+            ) : (<>
             { imageUrl && imageUrl !== "null" ? (<div className="flex justify-center mt-2 flex-col">
                 <img src={imageUrl} alt="Zdjęcie Fonowe" className="updateTestPage"/>
                 <div className="relative flex justify-center mt-2">
@@ -224,7 +272,7 @@ export const UpdateTestPage = () => {
                     <label htmlFor="data2Name" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>Nazwa Drugiej Kolumny</b></label>
                     <input type="text" id="data2Name" className="bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data2Name} onChange={(e) => setData2Name(e.target.value)} placeholder="Nazwa Drugiej Kolumny" name="data2Name" required />
                 </div>
-            </div>
+            </div></>)}
         </main>
     </>
 }

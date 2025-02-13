@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import axiosTestInstance from "../axios/axiosTestInstance.js";
 import { showAlert } from "../utils/showSwalAlert.js";
 import { useNavigate, Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCredentials } from "../redux/reducers/testerSlice.js";
 import Select from "react-select";
 import Swal from 'sweetalert2';
 
 export const TesterPage = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const auth = useSelector((state) => state.auth);
+    const tester = useSelector((state) => state.tester);
     const [textBtnNext, setTextBtnNext] = useState("Dalej");
-    const [datas, setDatas] = useState([]);
-    const [data1, setData1] = useState([]);
-    const [data2, setData2] = useState([]);
+    const [datas, setDatas] = useState(tester?.datas || []);
+    const [data1, setData1] = useState(tester?.data1 || []);
+    const [data2, setData2] = useState(tester?.data2 || []);
     const [images, setImages] = useState([]);
     const [answers, setAnswers] = useState(JSON.parse(localStorage.getItem("answers")) || []);
     const [numbers, setNumbers] = useState(JSON.parse(localStorage.getItem("numbers")) || []);
@@ -21,38 +24,72 @@ export const TesterPage = () => {
     const [data2Name, setData2Name] = useState(localStorage.getItem("data2Name") || "Nazwa");
     const [userAutorAnswer, setUserAutorAnswer] = useState("");
     const [userNameAnswer, setUserNameAnswer] = useState("");
+    const [loading, setLoading] = useState(true);
+
+    useLayoutEffect(() => {
+        const main = document.getElementsByTagName("main")[0];
+        const headerHeight = document.getElementsByTagName("header")[0]?.clientHeight || 0;
+    
+        main.style.top = `${headerHeight}px`;
+        main.style.height = `${window.innerHeight - headerHeight}px`;
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
+
             try {
-                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}/data/`);
+                let responseData = datas;
 
-                setDatas(response.data.datas);
+                if (localStorage.getItem("data") === null) {
+                    localStorage.setItem("data", true);
 
-                let fetchData1 = [];
-                let fetchData2 = [];
+                    const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}/data/`);
 
-                for (let i = 0; i < response.data.datas.length; i++) {
-                    fetchData1.push(response.data.datas[i].data.data1);
-                    fetchData2.push(response.data.datas[i].data.data2);
+                    setDatas(response.data.datas);
+                    responseData = response.data.datas;
+
+                    let fetchData1 = [];
+                    let fetchData2 = [];
+
+                    for (let i = 0; i < response.data.datas.length; i++) {
+                        fetchData1.push(response.data.datas[i].data.data1);
+                        fetchData2.push(response.data.datas[i].data.data2);
+                    }
+
+                    fetchData1 = Array.from(new Set(fetchData1)).sort();
+                    fetchData2 = Array.from(new Set(fetchData2)).sort();
+
+                    setData1(fetchData1);
+                    setData2(fetchData2);
+                    
+                    try {
+                        localStorage.setItem("data1Name", response.data.datas[0].data1Name || "Autor");
+                        localStorage.setItem("data2Name", response.data.datas[0].data2Name || "Nazwa");
+                        setData1Name(responseData[0]?.data1Name || "Autor");
+                        setData2Name(responseData[0]?.data2Name || "Nazwa");
+                    }
+                    catch (error) {
+                        console.error('Error:', error.message);
+                        if (localStorage.getItem('auth') === true)
+                            showAlert(500, "Server", error.message);
+                    }
+
+                    localStorage.setItem('datas', JSON.stringify(responseData));
+                    localStorage.setItem('data1', JSON.stringify(fetchData1));
+                    localStorage.setItem('data2', JSON.stringify(fetchData2));
+
+                    dispatch(setCredentials({
+                        datas: responseData,
+                        data1: fetchData1,
+                        data2: fetchData2
+                    }));
+
+                    responseData = response.data.datas;
                 }
 
-                fetchData1 = Array.from(new Set(fetchData1)).sort();
-                fetchData2 = Array.from(new Set(fetchData2)).sort();
-
-                setData1(fetchData1);
-                setData2(fetchData2);
-                
                 try {
-                    localStorage.setItem("data1Name", response.data.datas[0].data1Name);
-                    localStorage.setItem("data2Name", response.data.datas[0].data2Name);
-                    setData1Name(response.data.datas[0].data1Name);
-                    setData2Name(response.data.datas[0].data2Name);
-                }
-                catch {}
-
-                try {
-                    const length = response.data.datas.length;
+                    const length = responseData.length;
                     const numbers = Array.from({ length }, (_, index) => index);
 
                     for (let i = numbers.length - 1; i > 0; i--) {
@@ -60,28 +97,32 @@ export const TesterPage = () => {
                         [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
                     }
 
-                    if (localStorage.getItem("randIndex") === null) {
+                    if (!localStorage.getItem("randIndex")) {
                         localStorage.setItem("randIndex", 0);
                         setRandIndex(0);
                         localStorage.setItem('numbers', JSON.stringify(numbers)); 
                         setNumbers(numbers);
                     }
-                    if (localStorage.getItem("autorTester") === null)
+                    if (!localStorage.getItem("autorTester"))
                         localStorage.setItem("autorTester", true);
-                    if (localStorage.getItem("nameTester") === null)
+                    if (!localStorage.getItem("nameTester"))
                         localStorage.setItem("nameTester", false);
-                    if (localStorage.getItem("typeTester") === null)
+                    if (!localStorage.getItem("typeTester"))
                         localStorage.setItem("typeTester", "select");
 
-                    if (Number(localStorage.getItem("randIndex")) === response.data.datas.length - 1)
+                    if (Number(localStorage.getItem("randIndex")) === responseData.length - 1)
                         setTextBtnNext("Wyniki");
                 }
-                catch {}
+                catch (error) {
+                    console.error('Error:', error.message);
+                    if (localStorage.getItem('auth') === true)
+                        showAlert(500, "Server", error.message);
+                }
             } 
             catch (error) {
                 if (error.response) {
-                    const message = error.response.data.message;
-                    const status = error.response.status;
+                    const message = error.response?.data?.message;
+                    const status = error.response?.status;
                     if (localStorage.getItem('auth') === true)
                         showAlert(status, "Server", message);
                 }
@@ -91,33 +132,53 @@ export const TesterPage = () => {
                         showAlert(500, "Server", error.message);
                 }
             }
+            finally {
+                const main = document.getElementsByTagName("main")[0];
+                const headerHeight = document.getElementsByTagName("header")[0]?.clientHeight || 0;
+                main.style.height = `${window.outerHeight - headerHeight}px`;
+                setLoading(false);
+            }
         }
 
         fetchData();
-
-        const isAuth = localStorage.getItem('auth');
-        if (isAuth !== "true")
-            navigate('/');
-    }, [auth, navigate]);
+    }, [auth, tester, navigate, dispatch, datas, data1, data2]);
 
     useEffect(() => {
         if (datas.length > 0 && numbers.length > 0) {
             const currentData = datas[numbers[randIndex]];
             if (currentData && currentData.images) {
-                setImages(currentData.images);
-                if (localStorage.getItem("autorTester") === "false")
+                setLoading(true);
+                const imagePromises = currentData.images.map((src) => {
+                    return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.src = src;
+                        img.onload = resolve;
+                        img.onerror = reject;
+                    });
+                });
+    
+                Promise.all(imagePromises)
+                    .then(() => {
+                        setImages(currentData.images);
+                    })
+                    .catch((error) => console.error("Błąd Pobierania Obraza:", error))
+                    .finally(() => {setLoading(false)});
+    
+                if (localStorage.getItem("autorTester") === "false") {
                     setUserAutorAnswer(currentData.data.data1);
-                else if (localStorage.getItem("typeTester") === "select" && data1.length > 0)
+                } else if (localStorage.getItem("typeTester") === "select" && data1.length > 0) {
                     setUserAutorAnswer(data1[0]);
-                else
+                } else {
                     setUserAutorAnswer("");
-                
-                if (localStorage.getItem("nameTester") === "false")
+                }
+    
+                if (localStorage.getItem("nameTester") === "false") {
                     setUserNameAnswer(currentData.data.data2);
-                else if (localStorage.getItem("typeTester") === "select" && data2.length > 0)
+                } else if (localStorage.getItem("typeTester") === "select" && data2.length > 0) {
                     setUserNameAnswer(data2[0]);
-                else
+                } else {
                     setUserNameAnswer("");
+                }
             }
         }
     }, [datas, numbers, randIndex, data1, data2]);
@@ -351,6 +412,7 @@ export const TesterPage = () => {
                                 localStorage.removeItem("nameTester");
                                 localStorage.removeItem("typeTester");
                                 localStorage.removeItem("answers");
+                                localStorage.removeItem("data");
                             }}>
                             <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                                 Wrócić
@@ -380,7 +442,13 @@ export const TesterPage = () => {
                 </div>
             </nav>
         </header>
-        <main className={`mainDev relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px]`}>
+        <main className={`mainDev relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px] ${loading ? "justify-center items-center h-screen" : "justify-start"}`}>
+            {loading ? (
+                <div>
+                    <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                    <div className="mt-2 text-white text-lg">Pobieranie...</div>
+                </div>
+            ) : (<>
             <h1>{Number(randIndex) + 1}/{numbers.length}</h1>
             <div className="mt-2">
                 <div id="userAutorTester" className="elementTester flex flex-col mb-3 m-0">
@@ -402,7 +470,7 @@ export const TesterPage = () => {
                         </div>
                     </div>
                 ))}
-            </div>
+            </div></>)}
         </main>
     </>
 }
