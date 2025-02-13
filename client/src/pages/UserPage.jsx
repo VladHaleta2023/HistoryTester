@@ -55,6 +55,8 @@ export const UserPage = () => {
         }
 
         fetchData();
+
+        console.log(tests);
     }, [auth, navigate]);
 
     const handleSignOut = async (e) => {
