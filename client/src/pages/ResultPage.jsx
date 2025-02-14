@@ -10,6 +10,8 @@ export const ResultPage = () => {
     const [points, setPoints] = useState(0);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+
         const savedAnswers = JSON.parse(localStorage.getItem("answers")) || [];
         setAnswers(savedAnswers);
 
@@ -138,7 +140,7 @@ export const ResultPage = () => {
                 </div>
             </nav>
         </header>
-        <main className={`relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px]`}>
+        <main className={`relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px] justify-center items-center`}>
             <div className="mt-4 text-4xl mb-2">{points}/{answers.length}</div>
             <div className="text-4xl mb-2">{percent}%</div>
             <div className="progressBar mb-2" style={{ width: '100%', backgroundColor: '#e0e0e0', borderRadius: '5px' }}>

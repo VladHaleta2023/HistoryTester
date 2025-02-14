@@ -4,6 +4,8 @@ import { showAlert } from "../utils/showSwalAlert.js";
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
+import { LoadingPage } from "../components/LoadingPage.jsx";
+import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
 
 export const TablePage = () => {
     const navigate = useNavigate();
@@ -12,10 +14,13 @@ export const TablePage = () => {
     const [autor, setAutor] = useState(localStorage.getItem("autor") || "no");
     const [datas, setDatas] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [textLoading, setTextLoading] = useState("Pobieranie...");
 
     useEffect(() => {
         setStatus(localStorage.getItem("status") || "user");
         setAutor(localStorage.getItem("autor") || "no");
+
+        mainToCenter();
 
         const fetchData = async () => {
             try {
@@ -44,6 +49,9 @@ export const TablePage = () => {
                 }
 
                 setLoading(false);
+            }
+            finally {
+                mainToStart();
             }
         }
 
@@ -76,20 +84,16 @@ export const TablePage = () => {
 
           }).then(async (result) => {
             if (result.isConfirmed) {
-                const loadingSwal = Swal.fire({
-                    title: "Usuwanie Dancyh",
-                    text: "Trwa usuwanie danych...",
-                    icon: 'info',
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
+                setLoading(true);
+                setTextLoading("Trwa usuwanie danych...");
+                mainToCenter();
 
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/data/${dataId}/`);
 
-                    loadingSwal.close();
+                    setLoading(false);
+                    setTextLoading("Pobieranie...");
+                    mainToStart();
 
                     Swal.fire({
                         title: "Usuwanie Danych",
@@ -104,7 +108,9 @@ export const TablePage = () => {
                     });
                 }
                 catch (error) {
-                    loadingSwal.close();
+                    setLoading(false);
+                    setTextLoading("Pobieranie...");
+                    mainToStart();
                     
                     if (error.response) {
                         const message = error.response.data.message;
@@ -123,7 +129,6 @@ export const TablePage = () => {
                         }
                     }
                     else {
-                        console.error('Error:', error.message);
                         if (localStorage.getItem('auth') === "true") {
                             Swal.fire({
                                 title: "Usuwanie Danych",
@@ -172,14 +177,11 @@ export const TablePage = () => {
                 </div>) : null}
             </nav>
         </header>
-        {loading ? (
-                <div className="flex flex-col justify-center items-center h-screen">
-                    <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                    <div className="mt-2 text-white text-lg">Pobieranie...</div>
-                </div>
-            ) : (<>
-        { (status === "user" || autor === "no") ? (
+        {(status === "user" || autor === "no") ? (
             <main className={`relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px]`}>
+            {loading ? (
+                <LoadingPage textLoading={textLoading} />
+            ) : (<>
             {datas.length === 0 ? (
                 <p className="font-bold text-indigo-600"></p>
             ) : (
@@ -206,9 +208,13 @@ export const TablePage = () => {
                     }
                 </div>
             )}
+            </>)}
             </main>
         ) : (
             <main className={`mainDev relative p-2 text-white text-[24px] w-screen flex flex-col`}>
+            {loading ? (
+                <LoadingPage textLoading={textLoading} />
+            ) : (<>
             {datas.length === 0 ? (
                 <p className="font-bold text-indigo-600"></p>
             ) : (
@@ -256,6 +262,8 @@ export const TablePage = () => {
                     }
                 </div>
             )}
+            </>)}
             </main>
-        )}</>)}</>
+        )}
+    </>
 }

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setCredentials } from "../redux/reducers/testerSlice.js";
 import Select from "react-select";
 import Swal from 'sweetalert2';
+import { mainToStart } from "../scripts/mainPosition.js";
 
 export const TesterPage = () => {
     const navigate = useNavigate();
@@ -14,8 +15,8 @@ export const TesterPage = () => {
     const tester = useSelector((state) => state.tester);
     const [textBtnNext, setTextBtnNext] = useState("Dalej");
     const [datas, setDatas] = useState(tester?.datas || []);
-    const [data1, setData1] = useState(tester?.data1 || []);
-    const [data2, setData2] = useState(tester?.data2 || []);
+    const [data1, setData1] = useState(tester?.data1Select || []);
+    const [data2, setData2] = useState(tester?.data2Select || []);
     const [images, setImages] = useState([]);
     const [answers, setAnswers] = useState(JSON.parse(localStorage.getItem("answers")) || []);
     const [numbers, setNumbers] = useState(JSON.parse(localStorage.getItem("numbers")) || []);
@@ -27,6 +28,8 @@ export const TesterPage = () => {
     const [loading, setLoading] = useState(true);
 
     useLayoutEffect(() => {
+        window.scrollTo(0, 0);
+
         const main = document.getElementsByTagName("main")[0];
         const headerHeight = document.getElementsByTagName("header")[0]?.clientHeight || 0;
     
@@ -35,6 +38,13 @@ export const TesterPage = () => {
     }, []);
 
     useEffect(() => {
+        const isAuth = localStorage.getItem('auth');
+        if (isAuth !== "true") {
+            setLoading(false);
+            mainToStart();
+            navigate('/');
+        }
+
         const fetchData = async () => {
             setLoading(true);
 
@@ -76,13 +86,13 @@ export const TesterPage = () => {
                     }
 
                     localStorage.setItem('datas', JSON.stringify(responseData));
-                    localStorage.setItem('data1', JSON.stringify(fetchData1));
-                    localStorage.setItem('data2', JSON.stringify(fetchData2));
+                    localStorage.setItem('data1Select', JSON.stringify(fetchData1));
+                    localStorage.setItem('data2Select', JSON.stringify(fetchData2));
 
                     dispatch(setCredentials({
                         datas: responseData,
-                        data1: fetchData1,
-                        data2: fetchData2
+                        data1Select: fetchData1,
+                        data2Select: fetchData2
                     }));
 
                     responseData = response.data.datas;
@@ -144,6 +154,13 @@ export const TesterPage = () => {
     }, [auth, tester, navigate, dispatch, datas, data1, data2]);
 
     useEffect(() => {
+        const isAuth = localStorage.getItem('auth');
+        if (isAuth !== "true") {
+            setLoading(false);
+            mainToStart();
+            navigate('/');
+        }
+        
         if (datas.length > 0 && numbers.length > 0) {
             const currentData = datas[numbers[randIndex]];
             if (currentData && currentData.images) {
@@ -181,7 +198,7 @@ export const TesterPage = () => {
                 }
             }
         }
-    }, [datas, numbers, randIndex, data1, data2]);
+    }, [datas, numbers, randIndex, data1, data2, navigate]);
 
     const getAutorOptions = () => {
         let resData = [];

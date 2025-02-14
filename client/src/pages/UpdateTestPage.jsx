@@ -3,6 +3,8 @@ import axiosTestInstance from "../axios/axiosTestInstance.js";
 import { useNavigate, Link } from 'react-router-dom';
 import { showAlert } from "../utils/showSwalAlert.js";
 import Swal from 'sweetalert2';
+import { LoadingPage } from "../components/LoadingPage.jsx";
+import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
 
 export const UpdateTestPage = () => {
     const navigate = useNavigate();
@@ -12,6 +14,7 @@ export const UpdateTestPage = () => {
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [textLoading, setTextLoading] = useState("Pobiranie...");
 
     const onFileChange = (e) => {
         setImage(e.target.files[0]);
@@ -20,21 +23,17 @@ export const UpdateTestPage = () => {
     const handleUpdateTest = async (e) => {
         e.preventDefault();
 
-        const loadingSwal = Swal.fire({
-            title: "Aktualizacja Testa",
-            text: "Trwa aktualizowanie testa...",
-            icon: 'info',
-            showConfirmButton: false,
-            willOpen: () => {
-                Swal.showLoading();
-            }
-        });
+        mainToCenter();
+        setLoading(true);
+        setTextLoading("Trwa aktualizowanie testa...");
 
         try {
             const formData = new FormData();
 
             if (!name || !data1Name || !data2Name || name === "" || data1Name === "" || data2Name === "") {
-                loadingSwal.close();
+                setLoading(false);
+                setTextLoading("Pobieranie...");
+                mainToStart();
 
                 Swal.fire({
                     title: "Aktualizacja Testa",
@@ -54,7 +53,9 @@ export const UpdateTestPage = () => {
 
             const response = await axiosTestInstance.put(`/${localStorage.getItem("test")}`, formData, { withCredentials: true });
 
-            loadingSwal.close();
+            setLoading(false);
+            setTextLoading("Pobieranie...");
+            mainToStart();
 
             Swal.fire({
                 title: "Aktualizacja Testa",
@@ -66,11 +67,15 @@ export const UpdateTestPage = () => {
                     navigate(`/`);
                 }
             });
+
+            return;
         }
         catch (error) {
             if (error.response) {
                 const message = error.response.data.message;
-                loadingSwal.close();
+                setLoading(false);
+                setTextLoading("Pobieranie...");
+                mainToStart();
 
                 if (localStorage.getItem('auth') === "true") {
                     Swal.fire({
@@ -85,7 +90,9 @@ export const UpdateTestPage = () => {
             }
             else {
                 console.error('Error:', error.message);
-                loadingSwal.close();
+                setLoading(false);
+                setTextLoading("Pobieranie...");
+                mainToStart();
 
                 if (localStorage.getItem('auth') === "true") {
                     Swal.fire({
@@ -102,9 +109,7 @@ export const UpdateTestPage = () => {
     }
 
     useEffect(() => {
-        const main = document.getElementsByTagName("main")[0];
-        main.style.top = String(document.getElementsByTagName("header")[0].clientHeight) + "px";
-        main.style.height = String(window.innerHeight - document.getElementsByTagName("header")[0].clientHeight) + "px";
+        mainToCenter();
 
         const fetchData = async () => {
             try {
@@ -142,8 +147,7 @@ export const UpdateTestPage = () => {
                 }
             }
             finally {
-                main.style.height = String(window.outerHeight - document.getElementsByTagName("header")[0].clientHeight) + "px";
-                main.style.justifyContent = "flex-start";
+                mainToStart();
             }
         }
 
@@ -164,20 +168,15 @@ export const UpdateTestPage = () => {
 
           }).then(async (result) => {
             if (result.isConfirmed) {
-                const loadingSwal = Swal.fire({
-                    title: "Usuwanie Obraza Fonowego",
-                    text: "Trwa usuwanie Obraza Fonowego...",
-                    icon: 'info',
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
+                mainToCenter();
+                setLoading(true);
+                setTextLoading("Trwa usuwanie Obraza Fonowego...");
 
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/image`);
 
-                    loadingSwal.close();
+                    setLoading(false);
+                    setTextLoading("Pobieranie...");
 
                     Swal.fire({
                         title: "Usuwanie Obraza Fonowego",
@@ -192,7 +191,8 @@ export const UpdateTestPage = () => {
                     });
                 }
                 catch (error) {
-                    loadingSwal.close();
+                    setLoading(false);
+                    setTextLoading("Pobieranie...");
 
                     if (error.response) {
                         const message = error.response.data.message;
@@ -205,6 +205,9 @@ export const UpdateTestPage = () => {
                         if (localStorage.getItem('auth') === "true")
                             showAlert(500, "Usuwanie Obraza Fonowego", error.message);
                     }
+                }
+                finally {
+                    mainToStart();
                 }
             }
         });
@@ -234,12 +237,9 @@ export const UpdateTestPage = () => {
                 </div>
             </nav>
         </header>
-        <main className="relative p-2 text-white text-[24px] w-screen flex flex-col justify-center">
+        <main className="relative p-2 text-white text-[24px] w-screen flex flex-col">
             {loading ? (
-                <div>
-                    <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                    <div className="mt-2 text-white text-lg">Pobieranie...</div>
-                </div>
+                <LoadingPage textLoading={textLoading} />
             ) : (<>
             { imageUrl && imageUrl !== "null" ? (<div className="flex justify-center mt-2 flex-col">
                 <img src={imageUrl} alt="Zdjęcie Fonowe" className="updateTestPage"/>

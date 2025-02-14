@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { showAlert } from "../utils/showSwalAlert.js";
 import Swal from 'sweetalert2';
 import axiosTestInstance from "../axios/axiosTestInstance.js";
+import { LoadingPage } from "../components/LoadingPage.jsx";
+import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
 
 export const AddDataPage = () => {
     const navigate = useNavigate();
@@ -12,12 +14,11 @@ export const AddDataPage = () => {
     const [data1Name, setData1Name] = useState(localStorage.getItem("data1Name") || "Autor");
     const [data2Name, setData2Name] = useState(localStorage.getItem("data2Name") || "Nazwa");
     const [loading, setLoading] = useState(true);
+    const [textLoading, setTextLoading] = useState("Pobieranie...");
     const [dataId, setDataId] = useState(localStorage.getItem("dataLength") || 0);
 
     useEffect(() => {
-        const main = document.getElementsByTagName("main")[0];
-        main.style.top = String(document.getElementsByTagName("header")[0].clientHeight) + "px";
-        main.style.height = String(window.innerHeight - document.getElementsByTagName("header")[0].clientHeight) + "px";
+        mainToCenter();
 
         const fetchData = async () => {
             try {
@@ -30,11 +31,11 @@ export const AddDataPage = () => {
                 setData2Name(fetchData.data2Name);
                 setDataId(localStorage.getItem("dataLength") || 0);
 
+                setLoading(false);
+
                 const auth = localStorage.getItem('auth');
                 if (auth !== "true")
                     navigate('/');
-
-                setLoading(false);
             }
             catch (error) {
                 setLoading(false);
@@ -52,8 +53,7 @@ export const AddDataPage = () => {
                 }
             }
             finally {
-                main.style.height = String(window.innerHeight - document.getElementsByTagName("header")[0].clientHeight) + "px";
-                main.style.justifyContent = "flex-start";
+                mainToStart();
             }
         }
 
@@ -69,19 +69,12 @@ export const AddDataPage = () => {
         setFiles(files);
     };
 
-    // Change
     const handleAddData = async (e) => {
         e.preventDefault();
 
-        const loadingSwal = Swal.fire({
-            title: "Dodawanie Danych",
-            text: "Trwa dodawanie danych...",
-            icon: 'info',
-            showConfirmButton: false,
-            willOpen: () => {
-                Swal.showLoading();
-            }
-        });
+        setLoading(true);
+        setTextLoading("Trwa dodawanie danych...");
+        mainToCenter();
 
         try {
             const formData = new FormData();
@@ -95,7 +88,9 @@ export const AddDataPage = () => {
             formData.append('data2', data2);
 
             if (!data1 || !data2 || data1 === null || data2 === null) {
-                loadingSwal.close();
+                setLoading(false);
+                setTextLoading("Pobieranie...");
+                mainToStart();
 
                 Swal.fire({
                     title: "Dodawanie Danych",
@@ -109,7 +104,9 @@ export const AddDataPage = () => {
 
             const response = await axiosTestInstance.post(`/${localStorage.getItem("test")}/data/`, formData, { withCredentials: true });
 
-            loadingSwal.close();
+            setLoading(false);
+            setTextLoading("Pobieranie...");
+            mainToStart();
 
             Swal.fire({
                 title: "Dodawanie Danych",
@@ -122,7 +119,9 @@ export const AddDataPage = () => {
             });
         }
         catch (error) {
-            loadingSwal.close();
+            setLoading(false);
+            setTextLoading("Pobieranie...");
+            mainToStart();
 
             if (error.response) {
                 const message = error.response.data.message;
@@ -141,7 +140,10 @@ export const AddDataPage = () => {
                 }
             }
             else {
-                console.error('Error:', error.message);
+                setLoading(false);
+                setTextLoading("Pobieranie...");
+                mainToStart();
+
                 if (localStorage.getItem('auth') === "true") {
                     Swal.fire({
                         title: "Dodawanie Danych",
@@ -230,10 +232,7 @@ export const AddDataPage = () => {
         </header>
         <main className="relative p-2 text-white text-[24px] w-screen flex flex-col">
             {loading ? (
-                <div>
-                    <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                    <div className="mt-2 text-white text-lg">Pobieranie...</div>
-                </div>
+                <LoadingPage textLoading={textLoading} />
             ) : (<>
             <div className="mt-6">
                 <div className="element flex flex-col mb-3 m-0">

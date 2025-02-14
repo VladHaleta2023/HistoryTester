@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { showAlert } from "../utils/showSwalAlert.js";
 import Swal from 'sweetalert2';
 import axiosTestInstance from "../axios/axiosTestInstance.js";
+import { LoadingPage } from "../components/LoadingPage.jsx";
+import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
 
 export const UpdateDataPage = () => {
     const navigate = useNavigate();
@@ -13,11 +15,10 @@ export const UpdateDataPage = () => {
     const [data1Name, setData1Name] = useState(localStorage.getItem("data1Name") || "Autor");
     const [data2Name, setData2Name] = useState(localStorage.getItem("data2Name") || "Nazwa");
     const [loading, setLoading] = useState(true);
+    const [textLoading, setTextLoading] = useState("Pobieranie...");
 
     useEffect(() => {
-        const main = document.getElementsByTagName("main")[0];
-        main.style.top = `${document.getElementsByTagName("header")[0].clientHeight}px`;
-        main.style.height = `${window.innerHeight - document.getElementsByTagName("header")[0].clientHeight}px`;
+        mainToCenter();
 
         const fetchDataTest = async () => {
             try {
@@ -50,8 +51,7 @@ export const UpdateDataPage = () => {
                 handleFetchError(error);
             } finally {
                 setLoading(false);
-                main.style.height = `${window.outerHeight - document.getElementsByTagName("header")[0].clientHeight}px`;
-                main.style.justifyContent = "flex-start";
+                mainToStart();
             }
         };
 
@@ -64,7 +64,6 @@ export const UpdateDataPage = () => {
             const status = error.response.status;
             if (localStorage.getItem('auth') === "true") showAlert(status, "Aktualizacja Testa", message);
         } else {
-            console.error('Error:', error.message);
             if (localStorage.getItem('auth') === "true") showAlert(500, "Aktualizacja Testa", error.message);
         }
     }
@@ -81,21 +80,17 @@ export const UpdateDataPage = () => {
     const handleUpdateData = async (e) => {
         e.preventDefault();
 
-        const loadingSwal = Swal.fire({
-            title: "Aktualizacja Danych",
-            text: "Trwa aktualizowanie danych...",
-            icon: 'info',
-            showConfirmButton: false,
-            willOpen: () => {
-                Swal.showLoading();
-            }
-        });
+        setLoading(true);
+        setTextLoading("Trwa aktualizowanie danych...");
+        mainToCenter();
 
         try {
             const formData = new FormData();
 
             if (!data1 || !data2 || data1 === null || data2 === null) {
-                loadingSwal.close();
+                setLoading(false);
+                setTextLoading("Pobieranie...");
+                mainToStart();
 
                 Swal.fire({
                     title: "Aktualizacja Danych",
@@ -118,7 +113,9 @@ export const UpdateDataPage = () => {
                         await axiosTestInstance.put(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/images/${imageId}`, formData, { withCredentials: true });
                     }
                     catch (error) {
-                        loadingSwal.close();
+                        setLoading(false);
+                        setTextLoading("Pobieranie...");
+                        mainToStart();
 
                         if (error.response) {
                             const message = error.response.data.message;
@@ -137,7 +134,6 @@ export const UpdateDataPage = () => {
                             }
                         }
                         else {
-                            console.error('Error:', error.message);
                             if (localStorage.getItem('auth') === "true") {
                                 Swal.fire({
                                     title: "Aktualizacja Danych",
@@ -168,7 +164,9 @@ export const UpdateDataPage = () => {
 
             const response = await axiosTestInstance.put(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/`, formData, { withCredentials: true });
 
-            loadingSwal.close();
+            setLoading(false);
+            setTextLoading("Pobieranie...");
+            mainToStart();
 
             Swal.fire({
                 title: "Aktualizacja Danych",
@@ -184,7 +182,9 @@ export const UpdateDataPage = () => {
             formData.delete('images');
         }
         catch (error) {
-            loadingSwal.close();
+            setLoading(false);
+            setTextLoading("Pobieranie...");
+            mainToStart();
             
             if (error.response) {
                 const message = error.response.data.message;
@@ -203,7 +203,6 @@ export const UpdateDataPage = () => {
                 }
             }
             else {
-                console.error('Error:', error.message);
                 if (localStorage.getItem('auth') === "true") {
                     Swal.fire({
                         title: "Aktualizacja Danych",
@@ -273,20 +272,16 @@ export const UpdateDataPage = () => {
 
           }).then(async (result) => {
             if (result.isConfirmed) {
-                const loadingSwal = Swal.fire({
-                    title: "Usuwanie Obraza",
-                    text: "Trwa usuwanie Obraza...",
-                    icon: 'info',
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
+                setLoading(true);
+                setTextLoading("Trwa usuwanie Obraza...");
+                mainToCenter();
 
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/images/${imageId}`, { withCredentials: true });
                 
-                    loadingSwal.close();
+                    setLoading(false);
+                    setTextLoading("Pobieranie...");
+                    mainToStart();
 
                     Swal.fire({
                         title: "Usuwanie Obraza",
@@ -301,7 +296,9 @@ export const UpdateDataPage = () => {
                     });
                 }
                 catch (error) {
-                    loadingSwal.close();
+                    setLoading(false);
+                    setTextLoading("Pobieranie...");
+                    mainToStart();
 
                     if (error.response) {
                         const message = error.response.data.message;
@@ -320,7 +317,6 @@ export const UpdateDataPage = () => {
                         }
                     }
                     else {
-                        console.error('Error:', error.message);
                         if (localStorage.getItem('auth') === "true") {
                             Swal.fire({
                                 title: "Usuwanie Obraza",
@@ -373,10 +369,7 @@ export const UpdateDataPage = () => {
         </header>
         <main className="relative p-2 text-white text-[24px] w-screen flex flex-col">
             {loading ? (
-                <div>
-                    <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                    <div className="mt-2 text-white text-lg">Pobieranie...</div>
-                </div>
+                <LoadingPage textLoading={textLoading} />
             ) : (<>
             <div className="mt-6">
                 <div className="element flex flex-col mb-3 m-0">

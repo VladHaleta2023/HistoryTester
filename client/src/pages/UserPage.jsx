@@ -6,6 +6,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from "../redux/reducers/authSlice.js";
 import Swal from 'sweetalert2';
+import { LoadingPage } from "../components/LoadingPage.jsx";
+import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
 
 export const UserPage = () => {
     const dispatch = useDispatch();
@@ -15,6 +17,7 @@ export const UserPage = () => {
     const [tests, setTests] = useState([]);
     const [userId, setUserId] = useState(auth?.user?._id || null);
     const [loading, setLoading] = useState(true);
+    const [textLoading, setTextLoading] = useState("Pobieranie...");
 
     useEffect(() => {
         localStorage.clear();
@@ -24,10 +27,14 @@ export const UserPage = () => {
         localStorage.setItem("status", auth?.user?.status || "user");
         localStorage.setItem('auth', auth?.isAuthenticated || false);
 
+        mainToCenter();
+
         const fetchData = async () => {
             try {
                 const response = await axiosTestInstance.get("/");
                 setTests(response.data.tests);
+
+                mainToStart();
 
                 const isAuth = localStorage.getItem('auth');
                 if (isAuth !== "true") {
@@ -39,6 +46,7 @@ export const UserPage = () => {
             } 
             catch (error) {
                 setLoading(false);
+                mainToStart();
                 
                 if (error.response) {
                     const message = error.response.data.message;
@@ -55,9 +63,7 @@ export const UserPage = () => {
         }
 
         fetchData();
-
-        console.log(tests);
-    }, [auth, navigate]);
+    }, [auth, navigate, status]);
 
     const handleSignOut = async (e) => {
         e.preventDefault();
@@ -111,20 +117,16 @@ export const UserPage = () => {
 
           }).then(async (result) => {
             if (result.isConfirmed) {
-                const loadingSwal = Swal.fire({
-                    title: "Usuwanie Testa",
-                    text: "Trwa usuwanie testa...",
-                    icon: 'info',
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
+                setLoading(true);
+                setTextLoading("Trwa usuwanie testa...");
+                mainToCenter();
 
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}`);
 
-                    loadingSwal.close();
+                    setLoading(false);
+                    setTextLoading("Pobieranie...");
+                    mainToStart();
 
                     Swal.fire({
                         title: "Usuwanie Testa",
@@ -139,9 +141,12 @@ export const UserPage = () => {
                     });
                 }
                 catch (error) {
+                    setLoading(false);
+                    setTextLoading("Pobieranie...");
+                    mainToStart();
+
                     if (error.response) {
                         const message = error.response.data.message;
-                        loadingSwal.close();
 
                         if (localStorage.getItem('auth') === "true") {
                             Swal.fire({
@@ -158,9 +163,6 @@ export const UserPage = () => {
                         }
                     }
                     else {
-                        console.error('Error:', error.message);
-                        loadingSwal.close();
-
                         if (localStorage.getItem('auth') === "true") {
                             Swal.fire({
                                 title: "Usuwanie Testa",
@@ -227,67 +229,73 @@ export const UserPage = () => {
                 </div>) : null}
             </nav>
         </header>
-        {loading ? (
-            <div className="flex flex-col justify-center items-center h-screen">
-                <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                <div className="mt-2 text-white text-lg">Pobieranie...</div>
-            </div>
-        ) : (<>
         { status === "user" ? (
             <main className={`relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px]`}>
-            {tests.length === 0 ? (
-                <p className="font-bold text-indigo-600"></p>
+            {loading ? (
+                <LoadingPage textLoading={textLoading}/>
             ) : (
-                <div>
-                    {
-                        tests.map((item, index) => (
-                            <div key={index} id={item._id} className="lp-element my-2 py-3 px-5 bg-[#181d28] rounded-xl">
-                                <div className="font-bold text-indigo-600 break-words text-3xl mt-2 flex items-start">
-                                    { item.imageUrl && item.imageUrl !== "null" ? (<div className="flex justify-center mr-2">
-                                        <img src={item.imageUrl} alt="Zdjęcie Fonowe" className="userPage" />
-                                    </div>) : null}
-                                    <div className="mt-2">{item.name}</div>
-                                </div>
-                                <div className="mt-4">
-                                    <div className="flex flex-wrap dataLP">
-                                        <div className="text-indigo-600 font-bold mr-2">Stworzenie:</div>
-                                        <div className="text-slate-300 break-words">{getDate(new Date(item.createdAt))}</div>
+                <>
+                    {tests.length === 0 ? (
+                        <p className="font-bold text-indigo-600">Brak testów</p>
+                    ) : (
+                        <div>
+                            {tests.map((item, index) => (
+                                <div key={item._id} id={item._id} className="lp-element my-2 py-3 px-5 bg-[#181d28] rounded-xl">
+                                    <div className="font-bold text-indigo-600 break-words text-3xl mt-2 flex items-start">
+                                        {item.imageUrl && item.imageUrl !== "null" && (
+                                            <div className="flex justify-center mr-2">
+                                                <img src={item.imageUrl} alt="Zdjęcie Fonowe" className="userPage" />
+                                            </div>
+                                        )}
+                                        <div className="mt-2">{item.name}</div>
                                     </div>
-                                    <div className="flex flex-wrap btnsLP mt-2">
-                                        <div className="profile-element mr-2 mb-2">
-                                            <Link to={`/${item._id}/table`} onClick={() => {
-                                                try {
-                                                    localStorage.setItem("test", item._id);
-                                                }
-                                                catch (err) {
-                                                    console.log(err);
-                                                }
-                                            }}>
-                                                <div id={item._id} className="table-element text-[20px] py-1.5 px-7 bg-[#36508d] text-white border-none cursor-pointer rounded-xl">Pokaż Tabelę</div>
-                                            </Link>
+                                    <div className="mt-4">
+                                        <div className="flex flex-wrap dataLP">
+                                            <div className="text-indigo-600 font-bold mr-2">Twórca:</div>
+                                            <div className="text-slate-300 break-words">{item.userId.username}</div>
                                         </div>
-                                        <div className="profile-element mr-2 mb-2">
-                                            <Link to={`/${item._id}/tester`} onClick={() => {
-                                                try {
-                                                    localStorage.setItem("test", item._id);
-                                                }
-                                                catch (err) {
-                                                    console.log(err);
-                                                }
-                                            }}>
-                                                <div id={item._id} className="start-element text-[20px] py-1.5 px-7 text-white border-none cursor-pointer rounded-xl">Start</div>
-                                            </Link>
+                                        <div className="flex flex-wrap dataLP">
+                                            <div className="text-indigo-600 font-bold mr-2">Stworzenie:</div>
+                                            <div className="text-slate-300 break-words">{getDate(new Date(item.createdAt))}</div>
+                                        </div>
+                                        <div className="flex flex-wrap btnsLP mt-2">
+                                            <div className="profile-element mr-2 mb-2">
+                                                <Link to={`/${item._id}/table`} onClick={() => {
+                                                    try {
+                                                        localStorage.setItem("test", item._id);
+                                                    } catch (err) {
+                                                        console.log(err);
+                                                    }
+                                                }}>
+                                                    <div id={item._id} className="table-element text-[20px] py-1.5 px-7 bg-[#36508d] text-white border-none cursor-pointer rounded-xl">Pokaż Tabelę</div>
+                                                </Link>
+                                            </div>
+                                            <div className="profile-element mr-2 mb-2">
+                                                <Link to={`/${item._id}/tester`} onClick={() => {
+                                                    try {
+                                                        localStorage.setItem("test", item._id);
+                                                    } catch (err) {
+                                                        console.log(err);
+                                                    }
+                                                }}>
+                                                    <div id={item._id} className="start-element text-[20px] py-1.5 px-7 text-white border-none cursor-pointer rounded-xl">Start</div>
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
-                    }
-                </div>
+                            ))}
+                        </div>
+                    )}
+                </>
             )}
             </main>
         ) : (
             <main className={`mainDev relative p-2 text-white text-[24px] w-screen flex flex-col`}>
+                {loading ? (
+                    <LoadingPage textLoading={textLoading}/>
+                ) : (
+                <>
                 {tests.length === 0 ? (
                     <p className="font-bold text-indigo-600"></p>
                 ) : (
@@ -301,8 +309,12 @@ export const UserPage = () => {
                                         </div>) : null}
                                         <div className="mt-2">{item.name}</div>
                                     </div>
-                                    <div>
-                                        { userId === item.userId || status === "admin" ? (
+                                    <div className="mt-4">
+                                        <div className="flex flex-wrap dataLP">
+                                            <div className="text-indigo-600 font-bold mr-2">Twórca:</div>
+                                            <div className="text-slate-300 break-words">{item.userId.username}</div>
+                                        </div>
+                                        { userId === item.userId._id || status === "admin" ? (
                                         <>
                                             <div className="flex flex-wrap dataLP mt-1">
                                                 <div className="text-indigo-600 font-bold mr-2">Pierwsza Kolumna:</div>
@@ -317,7 +329,7 @@ export const UserPage = () => {
                                             <div className="text-indigo-600 font-bold mr-2">Stworzenie:</div>
                                             <div className="text-slate-300 break-words">{getDate(new Date(item.createdAt))}</div>
                                         </div>
-                                        { userId === item.userId || status === "admin" ? (
+                                        { userId === item.userId._id || status === "admin" ? (
                                         <>
                                             <div className="flex flex-wrap dataLP">
                                                 <div className="text-indigo-600 font-bold mr-2">Aktualizacja:</div>
@@ -329,7 +341,7 @@ export const UserPage = () => {
                                             </div>
                                         </>) : null }
                                         <div className="flex flex-wrap btnsLP mt-2">
-                                            { userId === item.userId || status === "admin" ? (
+                                            { userId === item.userId._id || status === "admin" ? (
                                             <>
                                                 <div className="profile-element mr-2 mb-2">
                                                     <Link to={`/${item._id}`} onClick={() => {
@@ -352,7 +364,7 @@ export const UserPage = () => {
                                                     try {
                                                         localStorage.setItem("test", item._id);
 
-                                                        if (item.userId === userId || status === "admin")
+                                                        if (item.userId._id === userId || status === "admin")
                                                             localStorage.setItem("autor", "yes");
                                                         else
                                                             localStorage.setItem("autor", "no");
@@ -361,11 +373,11 @@ export const UserPage = () => {
                                                         console.log(err);
                                                     }
                                                 }}>
-                                                    <div id={item._id} className="table-element text-[20px] py-1.5 px-7 bg-[#36508d] text-white border-none cursor-pointer rounded-xl">{ userId === item.userId || status === "admin" ? "Edytować Tabelę" : "Pokaż Tabelę"}</div>
+                                                    <div id={item._id} className="table-element text-[20px] py-1.5 px-7 bg-[#36508d] text-white border-none cursor-pointer rounded-xl">{ userId === item.userId._id || status === "admin" ? "Edytować Tabelę" : "Pokaż Tabelę"}</div>
                                                 </Link>
                                             </div>
                                             
-                                            { userId === item.userId || status === "admin" ? (
+                                            { userId === item.userId._id || status === "admin" ? (
                                                 <>
                                                     <div className="profile-element mr-2 mb-2">
                                                         <div id={item._id} onClick={(e) => deleteTest(e, item._id)} className="delete-element text-[20px] py-1.5 px-8 bg-[rgb(105,0,0)] text-white border-none cursor-pointer rounded-xl">Usunąć Test</div>
@@ -390,7 +402,9 @@ export const UserPage = () => {
                         }
                     </div>
                 )}
+                </>
+            )}
             </main>
         )}
-    </>)}</>
+    </>
 }

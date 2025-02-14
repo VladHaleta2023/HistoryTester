@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axiosTestInstance from "../axios/axiosTestInstance.js";
 import { useNavigate, Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { LoadingPage } from "../components/LoadingPage.jsx";
+import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
 
 export const AddTestPage = () => {
     const navigate = useNavigate();
@@ -9,6 +11,8 @@ export const AddTestPage = () => {
     const [data1Name, setData1Name] = useState("Autor");
     const [data2Name, setData2Name] = useState("Nazwa");
     const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [textLoading, setTextLoading] = useState("Pobieranie...");
 
     const onFileChange = (e) => {
         const file = e.target.files[0];
@@ -27,21 +31,17 @@ export const AddTestPage = () => {
     const handleAddTest = async (e) => {
         e.preventDefault();
 
-        const loadingSwal = Swal.fire({
-            title: "Dodawanie Testa",
-            text: "Trwa dodawanie testa...",
-            icon: 'info',
-            showConfirmButton: false,
-            willOpen: () => {
-                Swal.showLoading();
-            }
-        });
+        setTextLoading("Trwa dodawanie testa...");
+        setLoading(true);
+        mainToCenter();
 
         try {
             const formData = new FormData();
 
             if (!name || !data1Name || !data2Name || name === "" || data1Name === "" || data2Name === "") {
-                loadingSwal.close();
+                setLoading(false);
+                setTextLoading("Pobieranie...");
+                mainToStart();
 
                 Swal.fire({
                     title: "Dodawanie Testa",
@@ -61,7 +61,9 @@ export const AddTestPage = () => {
 
             const response = await axiosTestInstance.post('/', formData, { withCredentials: true });
 
-            loadingSwal.close();
+            setLoading(false);
+            setTextLoading("Pobieranie...");
+            mainToStart();
 
             Swal.fire({
                 title: "Dodawanie Testa",
@@ -76,7 +78,9 @@ export const AddTestPage = () => {
         catch (error) {
             if (error.response) {
                 const message = error.response.data.message;
-                loadingSwal.close();
+                setLoading(false);
+                setTextLoading("Pobieranie...");
+                mainToStart();
 
                 if (localStorage.getItem('auth') === "true") {
                     Swal.fire({
@@ -94,7 +98,9 @@ export const AddTestPage = () => {
             }
             else {
                 console.error('Error:', error.message);
-                loadingSwal.close();
+                setLoading(false);
+                setTextLoading("Pobieranie...");
+                mainToStart();
                 
                 if (localStorage.getItem('auth') === "true") {
                     Swal.fire({
@@ -114,12 +120,15 @@ export const AddTestPage = () => {
     }
 
     useEffect(() => {
-        const main = document.getElementsByTagName("main")[0];
-        main.style.top = String(document.getElementsByTagName("header")[0].clientHeight) + "px";
+        setLoading(true);
+        mainToCenter();
 
         const auth = localStorage.getItem('auth');
         if (auth !== "true")
             navigate('/');
+
+        setLoading(false);
+        mainToStart();
     }, [navigate])
 
     return <>
@@ -147,6 +156,9 @@ export const AddTestPage = () => {
             </nav>
         </header>
         <main className="relative p-2 text-white text-[24px] w-screen flex flex-col">
+            {loading ? (
+                <LoadingPage textLoading={textLoading}/>
+            ) : (<>
             <div className="mt-6">
                 <div className="element flex flex-col mb-3 m-0">
                     <label htmlFor="image" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>Obraz Fonowy</b></label>
@@ -170,7 +182,7 @@ export const AddTestPage = () => {
                     <label htmlFor="data2Name" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>Nazwa Drugiej Kolumny</b></label>
                     <input type="text" id="data2Name" className="bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data2Name} onChange={(e) => setData2Name(e.target.value)} placeholder="Nazwa Drugiej Kolumny" name="data2Name" required />
                 </div>
-            </div>
+            </div></>)}
         </main>
     </>
 }

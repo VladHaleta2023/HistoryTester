@@ -4,7 +4,7 @@ import { setCredentials, setAuth, setAlert } from "../redux/reducers/authSlice.j
 export const fetchUser = async (dispatch, navigate) => {
     try {
         const response = await axiosAuthInstance.get("/getMe", {
-            withCredentials: true,
+            withCredentials: true
         });
         const token = response.data.token;
         const user = response.data.user;
@@ -25,7 +25,6 @@ export const fetchUser = async (dispatch, navigate) => {
             dispatch(setAuth({isAuthenticated: false}));
         }
         else {
-            console.error('Error:', error.message);
             dispatch(setAlert({status: 500, title: "Autoryzacja", message: error.message}));
             dispatch(setAuth({isAuthenticated: false}));
         }
