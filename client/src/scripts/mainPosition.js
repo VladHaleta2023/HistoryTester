@@ -7,9 +7,7 @@ export const mainToCenter = () => {
 
         return main;
     }
-    catch (error) {
-        console.log(error);
-    }
+    catch {}
 }
 
 export const mainToStart = () => {
@@ -20,7 +18,5 @@ export const mainToStart = () => {
 
         return main;
     }
-    catch (error) {
-        console.log(error);
-    }
+    catch {}
 }

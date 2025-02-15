@@ -48,21 +48,22 @@ export const UserPage = () => {
                 setLoading(false);
                 mainToStart();
                 
-                if (error.response) {
-                    const message = error.response.data.message;
-                    const status = error.response.status;
-                    if (localStorage.getItem('auth') === true)
+                if (localStorage.getItem('auth') === true) {
+                    if (error.response) {
+                        const message = error.response.data.message;
+                        const status = error.response.status;
                         showAlert(status, "Server", message);
-                }
-                else {
-                    console.error('Error:', error.message);
-                    if (localStorage.getItem('auth') === true)
+                    }
+                    else {
                         showAlert(500, "Server", error.message);
+                    }
                 }
             }
         }
 
-        fetchData();
+        if (localStorage.getItem("auth") === "true") {
+            fetchData();
+        }
     }, [auth, navigate, status]);
 
     const handleSignOut = async (e) => {

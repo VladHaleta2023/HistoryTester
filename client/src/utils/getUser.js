@@ -15,18 +15,19 @@ export const fetchUser = async (dispatch, navigate) => {
         else {
             dispatch(setAlert({status: 400, title: "Autoryzacja", message: "Dany użytkownik jest zablokowany"}));
             dispatch(setAuth({isAuthenticated: false}));
+            localStorage.setItem('auth', false);
         }
     } 
     catch (error) {
+        dispatch(setAuth({isAuthenticated: false}));
+        localStorage.setItem('auth', false);
+        
         if (error.response) {
-            const message = error.response.data.message;
-            const status = error.response.status;
-            dispatch(setAlert({status, title: "Autoryzacja", message}));
-            dispatch(setAuth({isAuthenticated: false}));
+            dispatch(setAlert({status: error.response.status, title: "Autoryzacja", message: error.response.data.message}));
         }
         else {
             dispatch(setAlert({status: 500, title: "Autoryzacja", message: error.message}));
-            dispatch(setAuth({isAuthenticated: false}));
+            
         }
     }
 

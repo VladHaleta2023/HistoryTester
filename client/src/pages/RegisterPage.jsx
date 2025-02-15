@@ -20,6 +20,11 @@ export const RegisterPage = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
+        if (!username || !password || !cpassword) {
+            showAlert(400, "Logowanie", "Proszę wpisać Użytkownika, Hasło i Potwierdzenie Hasła");
+            return;
+        }
+
         if (password !== cpassword) {
             showAlert(400, "Rejestracja", "Hasło i Potwierdzenie Hasła są różne");
             return;
@@ -31,6 +36,8 @@ export const RegisterPage = () => {
                 status = "admin"
 
             const response = await axiosAuthInstance.post('/register', { username, password, status }, { withCredentials: true });
+
+            localStorage.setItem('auth', "true");
 
             Swal.fire({
                 title: "Rejestracja",
@@ -44,6 +51,8 @@ export const RegisterPage = () => {
             });
         }
         catch (error) {
+            localStorage.setItem('auth', "false");
+
             if (error.response) {
                 const message = error.response.data.message;
                 const status = error.response.status;

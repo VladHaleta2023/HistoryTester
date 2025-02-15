@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import { show_hide_password } from '../scripts/password.js';
@@ -12,8 +12,21 @@ export const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [passwordType, setPasswordType] = useState('password');
 
+    useEffect(() => {
+        const isAuth = localStorage.getItem('auth');
+        if (isAuth === "true") {
+            localStorage.setItem("auth", true);
+            navigate('/');
+        }
+    }, [navigate]);
+
     const handleLogin = async (e) => {
         e.preventDefault();
+
+        if (!username || !password) {
+            showAlert(400, "Logowanie", "Proszę wpisać Użytkownika i Hasło");
+            return;
+        }
 
         try {
             const response = await axiosAuthInstance.post('/login', { username, password }, { withCredentials: true });
@@ -26,6 +39,7 @@ export const LoginPage = () => {
                     confirmButtonText: 'OK',
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        localStorage.setItem('auth', "true");
                         window.location.reload();
                         navigate('/');
                     }
@@ -39,20 +53,21 @@ export const LoginPage = () => {
                     confirmButtonText: 'OK',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.reload();
+                        localStorage.setItem('auth', "false");
                         navigate('/');
                     }
                 });
             }
         }
         catch (error) {
+            localStorage.setItem('auth', "false");
+
             if (error.response) {
                 const message = error.response.data.message;
                 const status = error.response.status;
                 showAlert(status, "Logowanie", message);
             }
             else {
-                console.error('Error:', error.message);
                 showAlert("500", "Logowanie", error.message);
             }
         }
