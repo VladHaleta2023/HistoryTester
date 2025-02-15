@@ -27,15 +27,16 @@ export const UserPage = () => {
         localStorage.setItem("status", auth?.user?.status || "user");
         localStorage.setItem('auth', auth?.isAuthenticated || false);
 
-        mainToCenter();
-
         const fetchData = async () => {
             try {
-                const response = await axiosTestInstance.get("/");
+                mainToCenter();
+                setLoading(true);
+
+                const response = await axiosTestInstance.get("/", { withCredentials: true });
                 setTests(response.data.tests);
 
-                setLoading(false);
                 mainToStart();
+                setLoading(false);
 
                 const isAuth = localStorage.getItem('auth');
                 if (isAuth !== "true") {
@@ -43,8 +44,8 @@ export const UserPage = () => {
                 }
             } 
             catch (error) {
-                setLoading(false);
                 mainToStart();
+                setLoading(false);
                 
                 if (error.response) {
                     const message = error.response.data.message;
@@ -59,22 +60,16 @@ export const UserPage = () => {
             }
         }
 
-        if (localStorage.getItem("auth") === "true") {
-            fetchData();
-        }
+        fetchData();
     }, [auth, navigate, status]);
 
     const handleSignOut = async (e) => {
         e.preventDefault();
 
         try {
-            mainToStart();
-            
             const response = await axiosAuthInstance.post('/logOut', { withCredentials: true });
-            dispatch(setAlert({status: response.status, title: "Wylogowanie", message: response.data.message}));
             localStorage.removeItem('admin');
             localStorage.setItem('auth', false);
-            setLoading(false);
             
             Swal.fire({
                 title: "Wylogowanie",
@@ -84,13 +79,11 @@ export const UserPage = () => {
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.reload();
-                    setTimeout(() => {navigate('/')}, 3800);
+                    navigate('/');
                 }
             });
         }
         catch (error) {
-            setLoading(false);
-
             if (error.response) {
                 const message = error.response.data.message;
                 const status = error.response.status;
@@ -101,6 +94,7 @@ export const UserPage = () => {
             }
         }
         finally {
+            mainToStart();
             localStorage.clear();
         }
     }
@@ -121,16 +115,16 @@ export const UserPage = () => {
 
           }).then(async (result) => {
             if (result.isConfirmed) {
+                mainToCenter();
                 setLoading(true);
                 setTextLoading("Trwa usuwanie testa...");
-                mainToCenter();
 
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}`);
 
+                    mainToStart();
                     setLoading(false);
                     setTextLoading("Pobieranie...");
-                    mainToStart();
 
                     Swal.fire({
                         title: "Usuwanie Testa",
@@ -145,9 +139,9 @@ export const UserPage = () => {
                     });
                 }
                 catch (error) {
+                    mainToStart();
                     setLoading(false);
                     setTextLoading("Pobieranie...");
-                    mainToStart();
 
                     if (error.response) {
                         const message = error.response.data.message;
@@ -238,7 +232,7 @@ export const UserPage = () => {
             {loading ? (
                 <LoadingPage textLoading={textLoading}/>
             ) : (
-                <>
+                <div className="flex flex-col justify-start">
                     {tests.length === 0 ? (
                         <p className="font-bold text-indigo-600">Brak testów</p>
                     ) : (
@@ -291,7 +285,7 @@ export const UserPage = () => {
                             ))}
                         </div>
                     )}
-                </>
+                </div>
             )}
             </main>
         ) : (
@@ -303,7 +297,7 @@ export const UserPage = () => {
                 {tests.length === 0 ? (
                     <p className="font-bold text-indigo-600"></p>
                 ) : (
-                    <div>
+                    <div className="flex flex-col justify-start">
                         {
                             tests.map((item, index) => (
                                 <div key={index} id={item._id} className="lp-element my-2 py-3 px-5 bg-[#181d28] rounded-xl">
