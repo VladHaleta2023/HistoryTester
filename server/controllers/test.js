@@ -76,7 +76,7 @@ export const addTest = async (req, res) => {
             await newTest.save();
 
             return res.status(200).json({
-                message: "Dodawanie testa udane",
+                message: "Dodawanie testa udane, jest w trakcie weryfikacji",
                 test: newTest
             });
         }
