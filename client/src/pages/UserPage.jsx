@@ -3,14 +3,12 @@ import axiosTestInstance from "../axios/axiosTestInstance.js";
 import axiosAuthInstance from "../axios/axiosAuthInstance.js";
 import { showAlert } from "../utils/showSwalAlert.js";
 import { useNavigate, Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { setAlert } from "../redux/reducers/authSlice.js";
+import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { LoadingPage } from "../components/LoadingPage.jsx";
 import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
 
 export const UserPage = () => {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
     const auth = useSelector((state) => state.auth);
     const [status, setStatus] = useState(auth?.user?.status || "user");
@@ -20,6 +18,7 @@ export const UserPage = () => {
     const [textLoading, setTextLoading] = useState("Pobieranie...");
 
     useEffect(() => {
+        mainToCenter();
         localStorage.clear();
         setStatus(auth?.user?.status || "user");
         setUserId(auth?.user?._id || null);
@@ -27,9 +26,12 @@ export const UserPage = () => {
         localStorage.setItem("status", auth?.user?.status || "user");
         localStorage.setItem('auth', auth?.isAuthenticated || false);
 
+        if (!auth?.user?._id) {
+            return;
+        }
+
         const fetchData = async () => {
             try {
-                mainToCenter();
                 setLoading(true);
 
                 const response = await axiosTestInstance.get("/", { withCredentials: true });
@@ -61,7 +63,7 @@ export const UserPage = () => {
         }
 
         fetchData();
-    }, [auth, navigate, status]);
+    }, [auth?.user?._id, navigate, status]);
 
     const handleSignOut = async (e) => {
         e.preventDefault();
