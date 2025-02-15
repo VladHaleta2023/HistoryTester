@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import { show_hide_password } from '../scripts/password.js';
@@ -11,14 +11,6 @@ export const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordType, setPasswordType] = useState('password');
-
-    useEffect(() => {
-        const isAuth = localStorage.getItem('auth');
-        if (isAuth === "true") {
-            localStorage.setItem("auth", true);
-            navigate('/');
-        }
-    }, [navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -39,9 +31,9 @@ export const LoginPage = () => {
                     confirmButtonText: 'OK',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        localStorage.setItem('auth', "true");
                         window.location.reload();
-                        navigate('/');
+                        localStorage.setItem('auth', "true");
+                        setTimeout(() => {navigate('/')}, 6000);
                     }
                 });
             }

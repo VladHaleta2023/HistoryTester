@@ -34,29 +34,27 @@ export const UserPage = () => {
                 const response = await axiosTestInstance.get("/");
                 setTests(response.data.tests);
 
+                setLoading(false);
                 mainToStart();
 
                 const isAuth = localStorage.getItem('auth');
                 if (isAuth !== "true") {
                     navigate('/');
                 }
-                else {
-                    setLoading(false);
-                }
             } 
             catch (error) {
                 setLoading(false);
                 mainToStart();
                 
-                if (localStorage.getItem('auth') === true) {
-                    if (error.response) {
-                        const message = error.response.data.message;
-                        const status = error.response.status;
+                if (error.response) {
+                    const message = error.response.data.message;
+                    const status = error.response.status;
+                    if (localStorage.getItem('auth') === true)
                         showAlert(status, "Server", message);
-                    }
-                    else {
+                }
+                else {
+                    if (localStorage.getItem('auth') === true)
                         showAlert(500, "Server", error.message);
-                    }
                 }
             }
         }
@@ -70,10 +68,14 @@ export const UserPage = () => {
         e.preventDefault();
 
         try {
+            mainToStart();
+            
             const response = await axiosAuthInstance.post('/logOut', { withCredentials: true });
             dispatch(setAlert({status: response.status, title: "Wylogowanie", message: response.data.message}));
             localStorage.removeItem('admin');
             localStorage.setItem('auth', false);
+            setLoading(false);
+            
             Swal.fire({
                 title: "Wylogowanie",
                 text: response.data.message,
@@ -82,18 +84,19 @@ export const UserPage = () => {
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.reload();
-                    navigate('/');
+                    setTimeout(() => {navigate('/')}, 3800);
                 }
             });
         }
         catch (error) {
+            setLoading(false);
+
             if (error.response) {
                 const message = error.response.data.message;
                 const status = error.response.status;
                 showAlert(status, "Wylogowanie", message);
             }
             else {
-                console.error('Error:', error.message);
                 showAlert("500", "Wylogowanie", error.message);
             }
         }

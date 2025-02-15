@@ -89,7 +89,6 @@ export const UpdateTestPage = () => {
                 return;
             }
             else {
-                console.error('Error:', error.message);
                 setLoading(false);
                 setTextLoading("Pobieranie...");
                 mainToStart();
@@ -141,7 +140,6 @@ export const UpdateTestPage = () => {
                         showAlert(status, "Aktualizacja Testa", message);
                 }
                 else {
-                    console.error('Error:', error.message);
                     if (localStorage.getItem('auth') === "true")
                         showAlert(500, "Aktualizacja Testa", error.message);
                 }
@@ -201,7 +199,6 @@ export const UpdateTestPage = () => {
                             showAlert(status, "Usuwanie Obraza Fonowego", message);
                     }
                     else {
-                        console.error('Error:', error.message);
                         if (localStorage.getItem('auth') === "true")
                             showAlert(500, "Usuwanie Obraza Fonowego", error.message);
                     }
