@@ -19,13 +19,6 @@ export const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const [textLoading, setTextLoading] = useState("Trwa Logowanie Użytkownika. Proszę zaczekać...");
 
-    useEffect(() => {
-        if (localStorage.getItem("auth") === "true") {
-            fetchUser(dispatch, navigate);
-            localStorage.setItem("cookie", true);
-        }
-    }, [navigate, dispatch]);
-
     const handleLogin = async (e) => {
         e.preventDefault();
 
@@ -39,7 +32,7 @@ export const LoginPage = () => {
         }
 
         try {
-            const response = await axiosAuthInstance.post('/login', { username, password }, { withCredentials: true });
+            const response = await axiosAuthInstance.post('/login', { username, password });
 
             if (response.data.user.status !== "blocked") {
                 Swal.fire({
@@ -49,6 +42,7 @@ export const LoginPage = () => {
                     confirmButtonText: 'OK',
                 }).then(() => {
                     localStorage.setItem('auth', "true");
+                    localStorage.setItem('token', response.data.token);
                     mainToStart(true);
                     setLoading(false);
                     navigate(`/${response.data.user}`);

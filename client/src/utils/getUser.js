@@ -4,7 +4,7 @@ import { setCredentials, setAuth, setAlert } from "../redux/reducers/authSlice.j
 export const fetchUser = async (dispatch, navigate) => {
     try {
         const response = await axiosAuthInstance.get("/getMe", {
-            withCredentials: true
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         });
         const token = response.data.token;
         const user = response.data.user;

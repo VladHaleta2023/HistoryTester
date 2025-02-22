@@ -2,7 +2,7 @@ import axios from 'axios';
 import store from '../redux/store.js';
 
 const axiosTestInstance = axios.create({
-    baseURL: `https://historytester.onrender.com/api/test`,
+    baseURL: `http://localhost:5000/api/test`,
     withCredentials: true,
     headers: {
         'Content-Type': 'multipart/form-data',

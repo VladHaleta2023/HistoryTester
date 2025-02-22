@@ -21,9 +21,7 @@ export const UserPage = () => {
     const [textLoading, setTextLoading] = useState("Pobieranie...");
 
     useEffect(() => {
-        if (!localStorage.getItem("cookie")) {
-            fetchUser(dispatch, navigate);
-        }
+        fetchUser(dispatch, navigate);
 
         mainToCenter();
         localStorage.clear();
@@ -76,7 +74,7 @@ export const UserPage = () => {
         e.preventDefault();
 
         try {
-            const response = await axiosAuthInstance.post('/logOut', { withCredentials: true });
+            const response = await axiosAuthInstance.post('/logOut');
             localStorage.removeItem('admin');
             localStorage.setItem('auth', false);
             
@@ -127,7 +125,9 @@ export const UserPage = () => {
                 setTextLoading("Trwa usuwanie testa...");
 
                 try {
-                    const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}`);
+                    const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}`, {
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                    });
 
                     setLoading(false);
                     mainToStart();

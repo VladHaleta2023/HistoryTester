@@ -106,24 +106,6 @@ export const login = async (req, res) => {
             { expiresIn: "1d" }
         );
 
-        try {
-            res.cookie('token', token, {
-                path: '/',
-                domain: 'historytester.onrender.com',
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'None',
-                maxAge: 1 * 24 * 60 * 60 * 1000,
-            });
-
-            res.set("Authorization", `Bearer ${token}`);
-        }
-        catch (err) {
-            return res.status(500).json({
-                message: `Server error token: ${err}`
-            })
-        }
-
         return res.status(200).json({
             token,
             user: {
@@ -142,22 +124,7 @@ export const login = async (req, res) => {
 
 export const logOut = async (req, res) => {
     try {
-        try {
-            delete req.headers.authorization;
-            res.clearCookie('token', {
-                path: '/',
-                domain: 'historytester.onrender.com',
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'None',
-                maxAge: 1 * 24 * 60 * 60 * 1000,
-            });
-        }
-        catch (err) {
-            return res.status(500).json({
-                message: `Server error token: ${err}`
-            })
-        }
+        delete req.headers.authorization;
 
         return res.status(200).json({
             message: "Wylogowanie udane"
