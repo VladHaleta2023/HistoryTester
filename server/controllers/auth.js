@@ -144,7 +144,7 @@ export const logOut = async (req, res) => {
     try {
         try {
             delete req.headers.authorization;
-            res.clearCookie('token', token, {
+            res.clearCookie('token', {
                 path: '/',
                 domain: 'historytester.onrender.com',
                 httpOnly: true,
