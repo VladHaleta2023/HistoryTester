@@ -4,10 +4,9 @@ import { showAlert } from "../utils/showSwalAlert.js";
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCredentials } from "../redux/reducers/testerSlice.js";
+import Select from "react-select";
 import Swal from 'sweetalert2';
 import { mainToStart } from "../scripts/mainPosition.js";
-import { CustomSelectPage } from "../components/CustomSelectPage.jsx";
-import { LoadingPage } from "../components/LoadingPage.jsx";
 
 export const TesterPage = () => {
     const navigate = useNavigate();
@@ -273,14 +272,22 @@ export const TesterPage = () => {
         if (localStorage.getItem("autorTester") === "true") {
             if (localStorage.getItem("typeTester") === "select") {
                 return (
-                    <CustomSelectPage
+                    <Select
+                        className="selectTester"
                         value={
-                            data1.length > 0
+                            autorOptions.length > 0
                                 ? { value: userAutorAnswer, label: userAutorAnswer }
                                 : null
                         }
                         onChange={(selectedOption) => changeUserAutorAnswer(selectedOption)}
-                        options={getAutorOptions()}
+                        styles={customStyles}
+                        menuPlacement="bottom"
+                        options={autorOptions}
+                        defaultValue={
+                            autorOptions.length > 0 ? autorOptions[0] : null
+                        }
+                        isLoading={autorOptions.length === 0}
+                        isSearchable={false}
                     />
                 );
             }
@@ -307,14 +314,22 @@ export const TesterPage = () => {
         if (localStorage.getItem("nameTester") === "true") {
             if (localStorage.getItem("typeTester") === "select") {
                 return (
-                    <CustomSelectPage
+                    <Select
+                        className="selectTester"
                         value={
-                            data2.length > 0
+                            nameOptions.length > 0
                                 ? { value: userNameAnswer, label: userNameAnswer }
                                 : null
                         }
                         onChange={(selectedOption) => changeUserNameAnswer(selectedOption)}
-                        options={getNameOptions()}
+                        styles={customStyles}
+                        menuPlacement="bottom"
+                        options={nameOptions}
+                        defaultValue={
+                            nameOptions.length > 0 ? nameOptions[0] : null
+                        }
+                        isLoading={nameOptions.length === 0}
+                        isSearchable={false}
                     />
                 );
             }
@@ -448,7 +463,10 @@ export const TesterPage = () => {
         </header>
         <main className={`mainDev relative p-2 text-white text-[24px] w-screen flex flex-col top-[65px] ${loading ? "justify-center items-center h-screen" : "justify-start"}`}>
             {loading ? (
-                <LoadingPage textLoading={"Pobieranie..."} />
+                <div>
+                    <div className="loader w-20 h-20 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                    <div className="mt-2 text-white text-lg">Pobieranie...</div>
+                </div>
             ) : (<>
             <h1>{Number(randIndex) + 1}/{numbers.length}</h1>
             <div className="mt-2">

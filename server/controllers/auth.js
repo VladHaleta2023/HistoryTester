@@ -32,7 +32,6 @@ export const register = async (req, res) => {
         const token = jwt.sign(
             {
                 id: newUser._id,
-                username: newUser.username
             },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
@@ -42,11 +41,9 @@ export const register = async (req, res) => {
 
         try {
             res.cookie('token', token, {
-                domain: 'historytester.onrender.com',
-                path: '/',
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'None',
+                sameSite: 'Strict',
                 maxAge: 1 * 24 * 60 * 60 * 1000
             });
 
@@ -102,7 +99,6 @@ export const login = async (req, res) => {
         const token = jwt.sign(
             {
                 id: user._id,
-                username: user.username
             },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
@@ -110,11 +106,9 @@ export const login = async (req, res) => {
 
         try {
             res.cookie('token', token, {
-                domain: 'historytester.onrender.com',
-                path: '/',
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'None',
+                sameSite: 'Strict',
                 maxAge: 1 * 24 * 60 * 60 * 1000,
             });
 
@@ -146,13 +140,7 @@ export const logOut = async (req, res) => {
     try {
         try {
             delete req.headers.authorization;
-            res.clearCookie('token', {
-                domain: 'historytester.onrender.com',
-                path: '/',
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'None',
-            })
+            res.clearCookie('token');
         }
         catch (err) {
             return res.status(500).json({

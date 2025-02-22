@@ -7,6 +7,8 @@ import axiosAuthInstance from '../axios/axiosAuthInstance.js';
 import { setAlert } from "../redux/reducers/authSlice.js";
 import { showAlert } from "../utils/showSwalAlert.js";
 import Swal from 'sweetalert2';
+import { LoadingPage } from "../components/LoadingPage.jsx";
+import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
 
 export const RegisterPage = () => {
     const navigate = useNavigate();
@@ -16,16 +18,26 @@ export const RegisterPage = () => {
     const [passwordType, setPasswordType] = useState('password');
     const [cpasswordType, setCPasswordType] = useState('password');
     const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
+    const [textLoading, setTextLoading] = useState("Trwa Rejestrowanie Użytkownika. Proszę zaczekać...");
 
     const handleRegister = async (e) => {
         e.preventDefault();
 
+        mainToCenter();
+        setLoading(true);
+        setTextLoading("Trwa Rejestrowanie Użytkownika. Proszę zaczekać...");
+
         if (!username || !password || !cpassword) {
-            showAlert(400, "Logowanie", "Proszę wpisać Użytkownika, Hasło i Potwierdzenie Hasła");
+            mainToStart();
+            setLoading(false);
+            showAlert(400, "Rejestracja", "Proszę wpisać Użytkownika, Hasło i Potwierdzenie Hasła");
             return;
         }
 
         if (password !== cpassword) {
+            mainToStart();
+            setLoading(false);
             showAlert(400, "Rejestracja", "Hasło i Potwierdzenie Hasła są różne");
             return;
         }
@@ -46,11 +58,15 @@ export const RegisterPage = () => {
                 confirmButtonText: 'OK',
             }).then((result) => {
                 if (result.isConfirmed) {
+                    mainToStart();
+                    setLoading(false);
                     navigate('/');
                 }
             });
         }
         catch (error) {
+            mainToStart();
+            setLoading(false);
             localStorage.setItem('auth', "false");
 
             if (error.response) {
@@ -74,39 +90,45 @@ export const RegisterPage = () => {
                 <div className="ml-auto relative inline-block">
                     <Link to='/' className="profile-element mt-4">
                         <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
-                            Sign In
+                            Logowanie
                         </div>
                     </Link>
                 </div>
             </nav>
-            <form onSubmit={handleRegister} className="auth flex flex-col justify-start pt-4 items-center text-white h-[calc(100vh-64px)]">
-                <br></br>
-                <br></br>
-                <div className="element flex flex-col mb-1 m-0">
-                    <p className="title text-indigo-600 text-3xl font-bold">Rejestracja</p>
-                </div>
-                <div className="element flex flex-col mb-3 m-0">
-                    <label htmlFor="username" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-user"></i><b>Użytkownik</b></label>
-                    <input type="text" id="username" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter Username" name="username" required />
-                </div>
-                <div className="element flex flex-col mb-3 m-0">
-                    <label htmlFor="password" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-lock"></i><b>Hasło</b></label>
-                    <div className="relative">
-                        <input type={passwordType} id="password" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter Password" name="password" required />
-                        <img id="passwordImg" onClick={(e) => setPasswordType(show_hide_password(e.target, "password"))} src="password-view.svg" className="passImg absolute top-[6px] right-[10px] inline-block w-7 h-7 cursor-pointer" alt="view password" />
+            <main className="h-screen">
+                {loading ? (
+                    <LoadingPage textLoading={textLoading} />
+                ) : (
+                <form onSubmit={handleRegister} className="auth flex flex-col justify-start pt-4 items-center text-white h-[calc(100vh-64px)]">
+                    <br></br>
+                    <br></br>
+                    <div className="element flex flex-col mb-1 m-0">
+                        <p className="title text-indigo-600 text-3xl font-bold">Rejestracja</p>
                     </div>
-                </div>
-                <div className="element flex flex-col mb-3 m-0">
-                    <label htmlFor="cpassword" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-lock"></i><b>Potwierdź Hasło</b></label>
-                    <div className="relative">
-                        <input type={cpasswordType} id="cpassword" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={cpassword} onChange={(e) => setCPassword(e.target.value)} placeholder="Enter Confirm Password" name="password" required />
-                        <img id="passwordImg" onClick={(e) => setCPasswordType(show_hide_password(e.target, "cpassword"))} src="password-view.svg" className="passImg absolute top-[6px] right-[10px] inline-block w-7 h-7 cursor-pointer" alt="view password" />
+                    <div className="element flex flex-col mb-3 m-0">
+                        <label htmlFor="username" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-user"></i><b>Użytkownik</b></label>
+                        <input type="text" id="username" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter Username" name="username" required />
                     </div>
-                </div>
-                <div className="element flex flex-col mb-3 m-0">
-                    <button type="submit" className="auth bg-[#5b48c2] text-white p-2 border-none cursor-pointer w-[140px] text-2xl" name="login_btn">Sign Up</button>
-                </div>
-            </form>
+                    <div className="element flex flex-col mb-3 m-0">
+                        <label htmlFor="password" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-lock"></i><b>Hasło</b></label>
+                        <div className="relative">
+                            <input type={passwordType} id="password" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter Password" name="password" required />
+                            <img id="passwordImg" onClick={(e) => setPasswordType(show_hide_password(e.target, "password"))} src="password-view.svg" className="passImg absolute top-[6px] right-[10px] inline-block w-7 h-7 cursor-pointer" alt="view password" />
+                        </div>
+                    </div>
+                    <div className="element flex flex-col mb-3 m-0">
+                        <label htmlFor="cpassword" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-lock"></i><b>Potwierdź Hasło</b></label>
+                        <div className="relative">
+                            <input type={cpasswordType} id="cpassword" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={cpassword} onChange={(e) => setCPassword(e.target.value)} placeholder="Enter Confirm Password" name="password" required />
+                            <img id="passwordImg" onClick={(e) => setCPasswordType(show_hide_password(e.target, "cpassword"))} src="password-view.svg" className="passImg absolute top-[6px] right-[10px] inline-block w-7 h-7 cursor-pointer" alt="view password" />
+                        </div>
+                    </div>
+                    <div className="element flex flex-col mb-3 m-0">
+                        <button type="submit" className="auth bg-[#5b48c2] text-white p-2 border-none cursor-pointer w-[180px] text-2xl" name="login_btn">Zarejestruj się</button>
+                    </div>
+                </form>
+                )}
+            </main>
         </>
     )
 }

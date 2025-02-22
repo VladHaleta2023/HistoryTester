@@ -155,7 +155,7 @@ export const AddTestPage = () => {
                 </div>
             </nav>
         </header>
-        <main className="relative p-2 text-white text-[24px] w-screen flex flex-col">
+        <main className="relative p-2 text-white text-[24px] w-screen flex flex-col h-screen">
             {loading ? (
                 <LoadingPage textLoading={textLoading}/>
             ) : (<>

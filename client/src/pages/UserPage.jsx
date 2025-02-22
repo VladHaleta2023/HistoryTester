@@ -201,7 +201,7 @@ export const UserPage = () => {
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
                     <div className="ml-auto relative inline-block">
                         <div onClick={handleSignOut} className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[rgb(76,60,161)] text-white border-none cursor-pointer">
-                            Sign Out
+                            Wyloguj się
                         </div>
                     </div>
                 </div>
