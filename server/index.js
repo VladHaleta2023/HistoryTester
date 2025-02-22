@@ -16,7 +16,7 @@ const DB_NAME = process.env.DB_NAME || "HIT";
 const DB_PASSWORD = process.env.DB_PASSWORD || "vladhaleta2023";
 
 app.use(cors({
-    origin: 'https://keen-nasturtium-cf96fc.netlify.app',
+    origin: 'https://history-6oq2.onrender.com',
     methods: ['GET', 'POST', 'DELETE', 'PUT'],
     allowedHeaders: ['Authorization', 'Content-Type'],
     credentials: true,
@@ -26,6 +26,11 @@ app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use('/api/test', testRouter);
 app.use('/api/test', dataRouter);
+
+app.use((req, res, next) => {
+    console.log('User-Agent:', req.headers['user-agent']);
+    next();
+});
 
 async function connectDatabase() {
     try {
