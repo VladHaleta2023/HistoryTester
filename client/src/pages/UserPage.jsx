@@ -22,7 +22,7 @@ export const UserPage = () => {
 
     useEffect(() => {
         fetchUser(dispatch, navigate);
-        
+
         mainToCenter();
         localStorage.clear();
         setStatus(auth?.user?.status || "user");
@@ -39,7 +39,11 @@ export const UserPage = () => {
             try {
                 setLoading(true);
 
-                const response = await axiosTestInstance.get("/", { withCredentials: true });
+                const response = await axiosTestInstance.get("/", {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                });
                 setTests(response.data.tests);
 
                 setLoading(false);
