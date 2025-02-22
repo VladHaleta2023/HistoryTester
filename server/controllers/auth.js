@@ -45,7 +45,7 @@ export const register = async (req, res) => {
                 domain: 'historytester.onrender.com',
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Lax',
+                sameSite: 'None',
                 maxAge: 1 * 24 * 60 * 60 * 1000
             });
 
@@ -112,7 +112,7 @@ export const login = async (req, res) => {
                 domain: 'historytester.onrender.com',
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Lax',
+                sameSite: 'None',
                 maxAge: 1 * 24 * 60 * 60 * 1000,
             });
 
