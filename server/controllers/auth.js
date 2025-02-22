@@ -41,9 +41,11 @@ export const register = async (req, res) => {
 
         try {
             res.cookie('token', token, {
+                path: '/',
+                domain: 'historytester.onrender.com',
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Strict',
+                sameSite: 'Lax',
                 maxAge: 1 * 24 * 60 * 60 * 1000
             });
 
@@ -106,9 +108,11 @@ export const login = async (req, res) => {
 
         try {
             res.cookie('token', token, {
+                path: '/',
+                domain: 'historytester.onrender.com',
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Strict',
+                sameSite: 'Lax',
                 maxAge: 1 * 24 * 60 * 60 * 1000,
             });
 
