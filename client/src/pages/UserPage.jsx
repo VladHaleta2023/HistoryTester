@@ -7,9 +7,12 @@ import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { LoadingPage } from "../components/LoadingPage.jsx";
 import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
+import { fetchUser } from "../utils/getUser.js";
+import { useDispatch } from 'react-redux';
 
 export const UserPage = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const auth = useSelector((state) => state.auth);
     const [status, setStatus] = useState(auth?.user?.status || "user");
     const [tests, setTests] = useState([]);
@@ -18,6 +21,8 @@ export const UserPage = () => {
     const [textLoading, setTextLoading] = useState("Pobieranie...");
 
     useEffect(() => {
+        fetchUser(dispatch, navigate);
+
         mainToCenter();
         localStorage.clear();
         setStatus(auth?.user?.status || "user");
@@ -63,7 +68,7 @@ export const UserPage = () => {
         }
 
         fetchData();
-    }, [auth?.user?._id, navigate, status]);
+    }, [auth?.user?._id, navigate, status, dispatch]);
 
     const handleSignOut = async (e) => {
         e.preventDefault();
@@ -78,10 +83,8 @@ export const UserPage = () => {
                 text: response.data.message,
                 icon: 'success',
                 confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    navigate('/');
-                }
+            }).then(() => {
+                navigate('/');
             });
         }
         catch (error) {
@@ -132,11 +135,9 @@ export const UserPage = () => {
                         text: response.data.message,
                         icon: 'success',
                         confirmButtonText: 'OK',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();
-                            navigate(`/`);
-                        }
+                    }).then(() => {
+                        window.location.reload();
+                        navigate(`/`);
                     });
                 }
                 catch (error) {
@@ -153,11 +154,8 @@ export const UserPage = () => {
                                 text: message,
                                 icon: 'warning',
                                 confirmButtonText: 'OK',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.reload();
-                                    navigate(`/`);
-                                }
+                            }).then(() => {
+                                window.location.reload();
                             });
                         }
                     }
@@ -168,11 +166,8 @@ export const UserPage = () => {
                                 text: error.message,
                                 icon: 'error',
                                 confirmButtonText: 'OK',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.reload();
-                                    navigate(`/`);
-                                }
+                            }).then(() => {
+                                window.location.reload();
                             });
                         }
                     }

@@ -18,10 +18,14 @@ export const LoginPage = () => {
     const [passwordType, setPasswordType] = useState('password');
     const [loading, setLoading] = useState(false);
     const [textLoading, setTextLoading] = useState("Trwa Logowanie Użytkownika. Proszę zaczekać...");
+    const auth = localStorage.getItem("auth") || false;
 
+    /*
     useEffect(() => {
-        fetchUser(dispatch, navigate);
-    }, [dispatch, navigate]);
+        if (auth || auth === "false")
+            fetchUser(dispatch, navigate);
+    });
+    */
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -44,18 +48,11 @@ export const LoginPage = () => {
                     text: response.data.message,
                     icon: 'success',
                     confirmButtonText: 'OK',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        localStorage.setItem('auth', "true");
-                        setTimeout(() => {
-                            mainToStart();
-                            setLoading(false);
-                            navigate(`/${response.data.user}`);
-                        }, 6000);
-                    }
-                    else {
-                        console.log("123");
-                    }
+                }).then(() => {
+                    localStorage.setItem('auth', "true");
+                    mainToStart();
+                    setLoading(false);
+                    navigate(`/${response.data.user}`);
                 });
             }
             else {
@@ -67,14 +64,9 @@ export const LoginPage = () => {
                     text: "Dany użytkownik jest zablokowany",
                     icon: 'warning',
                     confirmButtonText: 'OK',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        localStorage.setItem('auth', "false");
-                        navigate('/');
-                    }
-                    else {
-                        console.log("123");
-                    }
+                }).then(() => {
+                    localStorage.setItem('auth', "false");
+                    navigate('/');
                 });
             }
         }

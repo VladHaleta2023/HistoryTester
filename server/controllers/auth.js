@@ -46,7 +46,8 @@ export const register = async (req, res) => {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'None',
-                maxAge: 1 * 24 * 60 * 60 * 1000
+                maxAge: 1 * 24 * 60 * 60 * 1000,
+                priority: "High",
             });
 
             res.set("Authorization", `Bearer ${token}`);
@@ -114,6 +115,7 @@ export const login = async (req, res) => {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'None',
                 maxAge: 1 * 24 * 60 * 60 * 1000,
+                priority: "High",
             });
 
             res.set("Authorization", `Bearer ${token}`);
@@ -151,6 +153,7 @@ export const logOut = async (req, res) => {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'None',
                 maxAge: 1 * 24 * 60 * 60 * 1000,
+                priority: "High",
             });
         }
         catch (err) {
