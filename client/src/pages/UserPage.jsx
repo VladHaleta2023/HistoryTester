@@ -21,8 +21,9 @@ export const UserPage = () => {
     const [textLoading, setTextLoading] = useState("Pobieranie...");
 
     useEffect(() => {
-        if (!localStorage.getItem("cookie"))
+        if (!localStorage.getItem("cookie")) {
             fetchUser(dispatch, navigate);
+        }
 
         mainToCenter();
         localStorage.clear();
