@@ -17,7 +17,8 @@ const DB_PASSWORD = process.env.DB_PASSWORD || "vladhaleta2023";
 app.use(cors({
     origin: 'https://history-6oq2.onrender.com',
     methods: ['GET', 'POST', 'DELETE', 'PUT'],
-    allowedHeaders: ['Authorization', 'Content-Type']
+    allowedHeaders: ['Authorization', 'Content-Type'],
+    credentials: true,
 }));
 app.use(express.json());
 app.use('/api/auth', authRouter);
