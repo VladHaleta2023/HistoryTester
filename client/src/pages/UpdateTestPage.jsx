@@ -51,7 +51,11 @@ export const UpdateTestPage = () => {
             formData.append('data1Name', data1Name);
             formData.append('data2Name', data2Name);
 
-            const response = await axiosTestInstance.put(`/${localStorage.getItem("test")}`, formData, { withCredentials: true });
+            const response = await axiosTestInstance.put(`/${localStorage.getItem("test")}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                }
+            });
 
             setLoading(false);
             setTextLoading("Pobieranie...");
@@ -110,7 +114,12 @@ export const UpdateTestPage = () => {
 
         const fetchData = async () => {
             try {
-                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}`);
+                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                });
+
                 const fetchData = response.data.test;
 
                 localStorage.setItem("name", fetchData.name);
@@ -169,7 +178,11 @@ export const UpdateTestPage = () => {
                 setTextLoading("Trwa usuwanie Obraza Fonowego...");
 
                 try {
-                    const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/image`);
+                    const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/image`, {
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                        }
+                    });
 
                     setLoading(false);
                     setTextLoading("Pobieranie...");

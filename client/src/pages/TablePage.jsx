@@ -24,7 +24,11 @@ export const TablePage = () => {
 
         const fetchData = async () => {
             try {
-                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}/data/`);
+                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}/data/`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                });
                 setDatas(response.data.datas);
 
                 const isAuth = localStorage.getItem('auth');
@@ -89,7 +93,12 @@ export const TablePage = () => {
                 mainToCenter();
 
                 try {
-                    const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/data/${dataId}/`);
+                    const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/data/${dataId}/`, 
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                        }
+                    });
 
                     setLoading(false);
                     setTextLoading("Pobieranie...");

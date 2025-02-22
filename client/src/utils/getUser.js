@@ -4,13 +4,15 @@ import { setCredentials, setAuth, setAlert } from "../redux/reducers/authSlice.j
 export const fetchUser = async (dispatch, navigate) => {
     try {
         const response = await axiosAuthInstance.get("/getMe", {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}`}
         });
         const token = response.data.token;
         const user = response.data.user;
         if (user.status !== "blocked") {
             dispatch(setCredentials({token, user}));
             dispatch(setAuth({isAuthenticated: true}));
+            localStorage.setItem("user", user._id);
+            localStorage.setItem("status", user.status);
             navigate(`/${user._id}`);
         }
         else {

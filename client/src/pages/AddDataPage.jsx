@@ -22,7 +22,12 @@ export const AddDataPage = () => {
 
         const fetchData = async () => {
             try {
-                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}`);
+                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                });
+                
                 const fetchData = response.data.test;
 
                 localStorage.setItem("data1Name", fetchData.data1Name);
@@ -102,7 +107,12 @@ export const AddDataPage = () => {
                 return;
             }
 
-            const response = await axiosTestInstance.post(`/${localStorage.getItem("test")}/data/`, formData, { withCredentials: true });
+            const response = await axiosTestInstance.post(`/${localStorage.getItem("test")}/data/`, formData,
+            {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                }
+            });
 
             setLoading(false);
             setTextLoading("Pobieranie...");

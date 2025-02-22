@@ -7,8 +7,8 @@ import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { LoadingPage } from "../components/LoadingPage.jsx";
 import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
-import { fetchUser } from "../utils/getUser.js";
 import { useDispatch } from 'react-redux';
+import { fetchUser } from "../utils/getUser.js";
 
 export const UserPage = () => {
     const navigate = useNavigate();
@@ -22,7 +22,7 @@ export const UserPage = () => {
 
     useEffect(() => {
         fetchUser(dispatch, navigate);
-
+        
         mainToCenter();
         localStorage.clear();
         setStatus(auth?.user?.status || "user");
@@ -84,6 +84,7 @@ export const UserPage = () => {
                 icon: 'success',
                 confirmButtonText: 'OK',
             }).then(() => {
+                sessionStorage.removeItem("token");
                 navigate('/');
             });
         }
@@ -126,7 +127,7 @@ export const UserPage = () => {
 
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}`, {
-                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
                     });
 
                     setLoading(false);

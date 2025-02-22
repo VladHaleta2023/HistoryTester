@@ -5,7 +5,6 @@ import cors from "cors";
 import authRouter from './routes/auth.js';
 import testRouter from './routes/test.js';
 import dataRouter from './routes/data.js';
-import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -16,12 +15,10 @@ const DB_NAME = process.env.DB_NAME || "HIT";
 const DB_PASSWORD = process.env.DB_PASSWORD || "vladhaleta2023";
 
 app.use(cors({
-    origin: 'http://localhost:3000', // https://history-6oq2.onrender.com
+    origin: 'https://history-6oq2.onrender.com',
     methods: ['GET', 'POST', 'DELETE', 'PUT'],
-    allowedHeaders: ['Authorization', 'Content-Type'],
-    credentials: true,
+    allowedHeaders: ['Authorization', 'Content-Type']
 }));
-app.use(cookieParser());
 app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use('/api/test', testRouter);

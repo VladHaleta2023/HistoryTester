@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import { show_hide_password } from '../scripts/password.js';
@@ -7,12 +7,12 @@ import axiosAuthInstance from '../axios/axiosAuthInstance.js';
 import Swal from 'sweetalert2';
 import { LoadingPage } from "../components/LoadingPage.jsx";
 import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
-import { fetchUser } from "../utils/getUser.js";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
+import { setCredentials, setAuth, setAlert } from "../redux/reducers/authSlice.js";
 
 export const LoginPage = () => {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordType, setPasswordType] = useState('password');
@@ -42,13 +42,25 @@ export const LoginPage = () => {
                     confirmButtonText: 'OK',
                 }).then(() => {
                     localStorage.setItem('auth', "true");
-                    localStorage.setItem('token', response.data.token);
+                    sessionStorage.setItem('token', String(response.data.token));
+
+                    const token = response.data.token;
+                    const user = response.data.user;
+
+                    dispatch(setCredentials({ token, user }));
+                    dispatch(setAuth({ isAuthenticated: true }));
+
                     mainToStart(true);
                     setLoading(false);
                     navigate(`/${response.data.user}`);
                 });
             }
             else {
+                dispatch(setAlert({status: 400, title: "Autoryzacja", message: "Dany użytkownik jest zablokowany"}));
+                dispatch(setAuth({isAuthenticated: false}));
+                localStorage.setItem('auth', false);
+                navigate('/');
+
                 mainToStart(true);
                 setLoading(false);
 
@@ -66,15 +78,19 @@ export const LoginPage = () => {
         catch (error) {
             mainToStart(true);
             setLoading(false);
-            localStorage.setItem('auth', "false");
+
+            dispatch(setAuth({isAuthenticated: false}));
+            localStorage.setItem('auth', false);
 
             if (error.response) {
                 const message = error.response.data.message;
                 const status = error.response.status;
                 showAlert(status, "Logowanie", message);
+                dispatch(setAlert({status: error.response.status, title: "Autoryzacja", message: error.response.data.message}));
             }
             else {
                 showAlert("500", "Logowanie", error.message);
+                dispatch(setAlert({status: 500, title: "Autoryzacja", message: error.message}));
             }
         }
     }

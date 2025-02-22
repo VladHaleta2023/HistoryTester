@@ -4,20 +4,20 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import { show_hide_password } from '../scripts/password.js';
 import axiosAuthInstance from '../axios/axiosAuthInstance.js';
-import { setAlert } from "../redux/reducers/authSlice.js";
 import { showAlert } from "../utils/showSwalAlert.js";
 import Swal from 'sweetalert2';
 import { LoadingPage } from "../components/LoadingPage.jsx";
 import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
+import { setCredentials, setAuth, setAlert } from "../redux/reducers/authSlice.js";
 
 export const RegisterPage = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [cpassword, setCPassword] = useState('');
     const [passwordType, setPasswordType] = useState('password');
     const [cpasswordType, setCPasswordType] = useState('password');
-    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const [textLoading, setTextLoading] = useState("Trwa Rejestrowanie Użytkownika. Proszę zaczekać...");
 
@@ -47,7 +47,7 @@ export const RegisterPage = () => {
             if (username === "Admin")
                 status = "admin"
 
-            const response = await axiosAuthInstance.post('/register', { username, password, status }, { withCredentials: true });
+            const response = await axiosAuthInstance.post('/register', { username, password, status });
 
             localStorage.setItem('auth', "true");
 
@@ -57,16 +57,26 @@ export const RegisterPage = () => {
                 icon: 'success',
                 confirmButtonText: 'OK',
             }).then(() => {
+                const token = response.data.token;
+                const user = response.data.user;
+
+                dispatch(setCredentials({ token, user }));
+                dispatch(setAuth({ isAuthenticated: true }));
+
                 mainToStart(true);
                 setLoading(false);
+
                 localStorage.setItem("user", response.data.user._id);
+                sessionStorage.setItem("token", response.data.token);
                 navigate(`/${response.data.user._id}`);
             });
         }
         catch (error) {
+            dispatch(setAuth({isAuthenticated: false}));
+            localStorage.setItem('auth', false);
+
             mainToStart(true);
             setLoading(false);
-            localStorage.setItem('auth', "false");
 
             if (error.response) {
                 const message = error.response.data.message;

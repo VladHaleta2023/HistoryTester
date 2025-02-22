@@ -22,7 +22,12 @@ export const UsersPage = () => {
         const { value } = selectedOption;
 
         try {
-            const response = await axiosAuthInstance.put(`/${userId}`, { status: value }, { withCredentials: true });
+            const response = await axiosAuthInstance.put(`/${userId}`, { status: value }, {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                }
+            });
+            
             Swal.fire({
                 title: "Aktualizacja użytkownika",
                 text: response.data.message,
@@ -79,7 +84,11 @@ export const UsersPage = () => {
 
         const fetchData = async () => {
             try {
-                const response = await axiosAuthInstance.get("/");
+                const response = await axiosAuthInstance.get("/", {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                });
                 setUsers(response.data.users);
             }
             catch (error) {

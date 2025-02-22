@@ -23,7 +23,11 @@ export const AdminTestsPage = () => {
         formData.append("verified", value);
 
         try {
-            const response = await axiosTestInstance.put(`/${testId}/status`, formData, { withCredentials: true });
+            const response = await axiosTestInstance.put(`/${testId}/status`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                }
+            });
             Swal.fire({
                 title: "Aktualizacja testa",
                 text: response.data.message,
@@ -80,7 +84,11 @@ export const AdminTestsPage = () => {
 
         const fetchData = async () => {
             try {
-                const response = await axiosTestInstance.get("/");
+                const response = await axiosTestInstance.get("/", {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                });
                 setTests(response.data.tests);
             }
             catch (error) {

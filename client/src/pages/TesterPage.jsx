@@ -54,7 +54,12 @@ export const TesterPage = () => {
                 if (localStorage.getItem("data") === null) {
                     localStorage.setItem("data", true);
 
-                    const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}/data/`);
+                    const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}/data/`, 
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                        }
+                    });
 
                     setDatas(response.data.datas);
                     responseData = response.data.datas;

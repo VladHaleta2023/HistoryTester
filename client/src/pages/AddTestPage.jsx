@@ -59,7 +59,11 @@ export const AddTestPage = () => {
             formData.append('data1Name', data1Name);
             formData.append('data2Name', data2Name);
 
-            const response = await axiosTestInstance.post('/', formData, { withCredentials: true });
+            const response = await axiosTestInstance.post('/', formData, {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                }
+            });
 
             setLoading(false);
             setTextLoading("Pobieranie...");

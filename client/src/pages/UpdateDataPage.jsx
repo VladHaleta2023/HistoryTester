@@ -22,7 +22,12 @@ export const UpdateDataPage = () => {
 
         const fetchDataTest = async () => {
             try {
-                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}`);
+                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                });
+
                 const fetchData = response.data.test;
 
                 localStorage.setItem("data1Name", fetchData.data1Name);
@@ -39,7 +44,12 @@ export const UpdateDataPage = () => {
 
         const fetchData = async () => {
             try {
-                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/`);
+                const response = await axiosTestInstance.get(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                });
                 const fetchData = response.data.data;
 
                 localStorage.setItem("data1", fetchData.data1);
@@ -111,7 +121,14 @@ export const UpdateDataPage = () => {
                     formData.set("image", uploadFiles[i].files[0]);
 
                     try {
-                        await axiosTestInstance.put(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/images/${imageId}`, formData, { withCredentials: true });
+                        await axiosTestInstance.put(
+                            `/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/images/${imageId}`, 
+                            formData, 
+                            {
+                                headers: {
+                                    'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                                }
+                            });
                     }
                     catch (error) {
                         setLoading(false);
@@ -159,7 +176,14 @@ export const UpdateDataPage = () => {
             formData.append('data1', data1);
             formData.append('data2', data2);
 
-            const response = await axiosTestInstance.put(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/`, formData, { withCredentials: true });
+            const response = await axiosTestInstance.put(
+                `/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/`, 
+                formData, 
+                {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                });
 
             setLoading(false);
             setTextLoading("Pobieranie...");
@@ -268,7 +292,13 @@ export const UpdateDataPage = () => {
                 mainToCenter();
 
                 try {
-                    const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/images/${imageId}`, { withCredentials: true });
+                    const response = await axiosTestInstance.delete(
+                        `/${localStorage.getItem("test")}/data/${localStorage.getItem("data")}/images/${imageId}`, 
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                            }
+                        });
                 
                     setLoading(false);
                     setTextLoading("Pobieranie...");

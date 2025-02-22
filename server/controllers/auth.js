@@ -39,24 +39,6 @@ export const register = async (req, res) => {
 
         await newUser.save();
 
-        try {
-            res.cookie('token', token, {
-                path: '/',
-                domain: 'historytester.onrender.com',
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'None',
-                maxAge: 1 * 24 * 60 * 60 * 1000,
-            });
-
-            res.set("Authorization", `Bearer ${token}`);
-        }
-        catch (err) {
-            return res.status(500).json({
-                message: `Server error token: ${err}`
-            })
-        }
-
         return res.status(200).json({
             token,
             user: {
