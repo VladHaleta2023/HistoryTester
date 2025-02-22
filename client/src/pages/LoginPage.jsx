@@ -11,26 +11,25 @@ import { fetchUser } from "../utils/getUser.js";
 import { useDispatch } from 'react-redux';
 
 export const LoginPage = () => {
-    const navigate = useNavigate();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordType, setPasswordType] = useState('password');
     const [loading, setLoading] = useState(false);
     const [textLoading, setTextLoading] = useState("Trwa Logowanie Użytkownika. Proszę zaczekać...");
-    const auth = localStorage.getItem("auth") || false;
 
-    /*
     useEffect(() => {
-        if (auth || auth === "false")
+        if (localStorage.getItem("auth") === "true") {
             fetchUser(dispatch, navigate);
-    });
-    */
+            localStorage.setItem("cookie", true);
+        }
+    }, [navigate, dispatch]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        mainToCenter();
+        mainToCenter(true);
         setLoading(true);
         setTextLoading("Trwa Logowanie Użytkownika. Proszę zaczekać...");
 
@@ -50,13 +49,13 @@ export const LoginPage = () => {
                     confirmButtonText: 'OK',
                 }).then(() => {
                     localStorage.setItem('auth', "true");
-                    mainToStart();
+                    mainToStart(true);
                     setLoading(false);
                     navigate(`/${response.data.user}`);
                 });
             }
             else {
-                mainToStart();
+                mainToStart(true);
                 setLoading(false);
 
                 Swal.fire({
@@ -71,7 +70,7 @@ export const LoginPage = () => {
             }
         }
         catch (error) {
-            mainToStart();
+            mainToStart(true);
             setLoading(false);
             localStorage.setItem('auth', "false");
 
@@ -100,11 +99,11 @@ export const LoginPage = () => {
                     </div>
                 </nav>
             </header>
-            <main className="h-screen">
+            <main>
                 {loading ? (
                     <LoadingPage textLoading={textLoading} />
                 ) : (
-                <form onSubmit={handleLogin} className='auth flex flex-col justify-start pt-4 items-center text-white'>
+                <form onSubmit={handleLogin} className='auth flex flex-col justify-start pt-4 items-center text-white h-[calc(100vh-70px)]'>
                     <br></br>
                     <br></br>
                     <div className="element flex flex-col mb-1 m-0">

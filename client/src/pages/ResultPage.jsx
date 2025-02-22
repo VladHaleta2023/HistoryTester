@@ -31,8 +31,13 @@ export const ResultPage = () => {
             setPercent(0);
         }
 
-        if (isAuth !== "true")
+        if (isAuth !== "true" || !localStorage.getItem("user"))
             navigate('/');
+
+        const randIndex = Number(localStorage.getItem("randIndex")) || 0;
+
+        if (randIndex >= savedAnswers.length)
+            localStorage.removeItem("randIndex");;
     }, [auth, navigate]);
 
     const autorResultComponent = (item, index) => {

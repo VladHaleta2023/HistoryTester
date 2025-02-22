@@ -30,7 +30,7 @@ export const TesterSettingsPage = () => {
         setNameTester(localStorage.getItem("nameTester") || "false");
         setTypeTester(localStorage.getItem("typeTester") || "true");
 
-        if (isAuth !== "true")
+        if (isAuth !== "true" || !localStorage.getItem("user"))
             navigate('/');
     }, [auth, navigate]);
 

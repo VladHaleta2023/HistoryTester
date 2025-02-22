@@ -29,11 +29,9 @@ export const AdminTestsPage = () => {
                 text: response.data.message,
                 icon: 'success',
                 confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.reload();
-                    navigate('/admin/tests');
-                }
+            }).then(() => {
+                window.location.reload();
+                navigate('/admin/tests');
             });
         }
         catch (error) {
@@ -77,7 +75,7 @@ export const AdminTestsPage = () => {
         main.style.top = String(document.getElementsByTagName("header")[0].clientHeight) + "px";
 
         const auth = localStorage.getItem('auth');
-        if (auth !== "true")
+        if (auth !== "true" || !localStorage.getItem("user"))
             navigate('/');
 
         const fetchData = async () => {
@@ -122,7 +120,7 @@ export const AdminTestsPage = () => {
                 <div className="flex items-start">
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
                     <div className="ml-auto relative inline-block">
-                        <Link to={'/'}>
+                        <Link to={`/${localStorage.getItem("user")}`}>
                             <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                                 Wrócić
                             </div>

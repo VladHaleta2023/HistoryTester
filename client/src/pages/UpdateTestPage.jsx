@@ -62,10 +62,8 @@ export const UpdateTestPage = () => {
                 text: response.data.message,
                 icon: 'success',
                 confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    navigate(`/`);
-                }
+            }).then(() => {
+                navigate(`/${localStorage.getItem("user")}`);
             });
 
             return;
@@ -125,7 +123,7 @@ export const UpdateTestPage = () => {
                 setImageUrl(fetchData.imageUrl);
 
                 const auth = localStorage.getItem('auth');
-                if (auth !== "true")
+                if (auth !== "true" || !localStorage.getItem("user"))
                     navigate('/');
 
                 setLoading(false);
@@ -181,11 +179,8 @@ export const UpdateTestPage = () => {
                         text: response.data.message,
                         icon: 'success',
                         confirmButtonText: 'OK',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();
-                            navigate(`/${localStorage.getItem("test")}`);
-                        }
+                    }).then(() => {
+                        window.location.reload();
                     });
                 }
                 catch (error) {
@@ -216,7 +211,7 @@ export const UpdateTestPage = () => {
                 <div className="flex items-start">
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
                     <div className="ml-auto relative inline-block">
-                        <Link to={'/'}>
+                        <Link to={`/${localStorage.getItem("user")}`}>
                             <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                                 Wrócić
                             </div>

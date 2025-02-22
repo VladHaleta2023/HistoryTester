@@ -26,7 +26,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/" element={<LoginPage />} />
           <Route path="/:userId" element={<UserPage />} />
-          <Route path="/:testId" element={<UpdateTestPage />} />
+          <Route path="/test/:testId" element={<UpdateTestPage />} />
           <Route path="/:testId/tester" element={<TesterPage />} />
           <Route path="/:testId/result" element={<ResultPage />} />
           <Route path="/:testId/settings" element={<TesterSettingsPage />} />

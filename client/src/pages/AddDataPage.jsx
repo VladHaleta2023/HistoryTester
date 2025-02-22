@@ -113,9 +113,8 @@ export const AddDataPage = () => {
                 text: response.data.message,
                 icon: 'success',
                 confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed)
-                    navigate(`/${localStorage.getItem("test")}/table`);
+            }).then(() => {
+                navigate(`/${localStorage.getItem("test")}/table`);
             });
         }
         catch (error) {
@@ -131,11 +130,8 @@ export const AddDataPage = () => {
                         text: message,
                         icon: 'warning',
                         confirmButtonText: 'OK',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();
-                            navigate(`/${localStorage.getItem("test")}/table/new`);
-                        }
+                    }).then(() => {
+                        window.location.reload();
                     });
                 }
             }
@@ -150,11 +146,8 @@ export const AddDataPage = () => {
                         text: error.message,
                         icon: 'error',
                         confirmButtonText: 'OK',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();
-                            navigate(`/${localStorage.getItem("test")}/table/new`);
-                        }
+                    }).then(() => {
+                        window.location.reload();
                     });
                 }
             }

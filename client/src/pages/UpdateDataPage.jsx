@@ -30,7 +30,8 @@ export const UpdateDataPage = () => {
                 setData1Name(fetchData.data1Name);
                 setData2Name(fetchData.data2Name);
 
-                if (localStorage.getItem('auth') !== "true") navigate('/');
+                if (localStorage.getItem('auth') !== "true" || !localStorage.getItem("user")) 
+                    navigate('/');
             } catch (error) {
                 handleFetchError(error);
             }
@@ -125,11 +126,9 @@ export const UpdateDataPage = () => {
                                     text: message,
                                     icon: 'warning',
                                     confirmButtonText: 'OK',
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.location.reload();
-                                        navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
-                                    }
+                                }).then(() => {
+                                    window.location.reload();
+                                    navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
                                 });
                             }
                         }
@@ -140,11 +139,9 @@ export const UpdateDataPage = () => {
                                     text: error.message,
                                     icon: 'error',
                                     confirmButtonText: 'OK',
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.location.reload();
-                                        navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
-                                    }
+                                }).then(() => {
+                                    window.location.reload();
+                                    navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
                                 });
                             }
                         }
@@ -173,10 +170,8 @@ export const UpdateDataPage = () => {
                 text: response.data.message,
                 icon: 'success',
                 confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    navigate(`/${localStorage.getItem("test")}/table`);
-                }
+            }).then(() => {
+                navigate(`/${localStorage.getItem("test")}/table`);
             });
 
             formData.delete('images');
@@ -194,11 +189,9 @@ export const UpdateDataPage = () => {
                         text: message,
                         icon: 'warning',
                         confirmButtonText: 'OK',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();
-                            navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
-                        }
+                    }).then(() => {
+                        window.location.reload();
+                        navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
                     });
                 }
             }
@@ -209,11 +202,9 @@ export const UpdateDataPage = () => {
                         text: error.message,
                         icon: 'error',
                         confirmButtonText: 'OK',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();
-                            navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
-                        }
+                    }).then(() => {
+                        window.location.reload();
+                        navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
                     });
                 }
             }
@@ -288,11 +279,9 @@ export const UpdateDataPage = () => {
                         text: response.data.message,
                         icon: 'success',
                         confirmButtonText: 'OK',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();
-                            navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
-                        }
+                    }).then(() => {
+                        window.location.reload();
+                        navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
                     });
                 }
                 catch (error) {
@@ -308,11 +297,9 @@ export const UpdateDataPage = () => {
                                 text: message,
                                 icon: 'warning',
                                 confirmButtonText: 'OK',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.reload();
-                                    navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
-                                }
+                            }).then(() => {
+                                window.location.reload();
+                                navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
                             });
                         }
                     }
@@ -323,11 +310,9 @@ export const UpdateDataPage = () => {
                                 text: error.message,
                                 icon: 'error',
                                 confirmButtonText: 'OK',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.reload();
-                                    navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
-                                }
+                            }).then(() => {
+                                window.location.reload();
+                                navigate(`/${localStorage.getItem("test")}/table/${localStorage.getItem("data")}`);
                             });
                         }
                     }

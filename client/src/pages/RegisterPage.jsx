@@ -24,19 +24,19 @@ export const RegisterPage = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        mainToCenter();
+        mainToCenter(true);
         setLoading(true);
         setTextLoading("Trwa Rejestrowanie Użytkownika. Proszę zaczekać...");
 
         if (!username || !password || !cpassword) {
-            mainToStart();
+            mainToStart(true);
             setLoading(false);
             showAlert(400, "Rejestracja", "Proszę wpisać Użytkownika, Hasło i Potwierdzenie Hasła");
             return;
         }
 
         if (password !== cpassword) {
-            mainToStart();
+            mainToStart(true);
             setLoading(false);
             showAlert(400, "Rejestracja", "Hasło i Potwierdzenie Hasła są różne");
             return;
@@ -56,16 +56,15 @@ export const RegisterPage = () => {
                 text: response.data.message,
                 icon: 'success',
                 confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    mainToStart();
-                    setLoading(false);
-                    navigate('/');
-                }
+            }).then(() => {
+                mainToStart(true);
+                setLoading(false);
+                localStorage.setItem("user", response.data.user._id);
+                navigate(`/${response.data.user._id}`);
             });
         }
         catch (error) {
-            mainToStart();
+            mainToStart(true);
             setLoading(false);
             localStorage.setItem('auth', "false");
 
@@ -85,17 +84,19 @@ export const RegisterPage = () => {
 
     return (
         <>
-            <nav className="flex header p-3.5 text-white text-[28px] items-center select-none">
-                <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
-                <div className="ml-auto relative inline-block">
-                    <Link to='/' className="profile-element mt-4">
-                        <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
-                            Logowanie
-                        </div>
-                    </Link>
-                </div>
-            </nav>
-            <main className="h-screen">
+            <header>
+                <nav className="flex header p-3.5 text-white text-[28px] items-center select-none">
+                    <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
+                    <div className="ml-auto relative inline-block">
+                        <Link to='/' className="profile-element mt-4">
+                            <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
+                                Logowanie
+                            </div>
+                        </Link>
+                    </div>
+                </nav>
+            </header>
+            <main>
                 {loading ? (
                     <LoadingPage textLoading={textLoading} />
                 ) : (

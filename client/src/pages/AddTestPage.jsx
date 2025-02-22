@@ -70,9 +70,8 @@ export const AddTestPage = () => {
                 text: response.data.message,
                 icon: 'success',
                 confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed)
-                    navigate('/');
+            }).then(() => {
+                navigate(`/${localStorage.getItem("user")}`);
             });
         }
         catch (error) {
@@ -88,11 +87,9 @@ export const AddTestPage = () => {
                         text: message,
                         icon: 'warning',
                         confirmButtonText: 'OK',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();
-                            navigate('/new');
-                        }
+                    }).then(() => {
+                        window.location.reload();
+                        navigate('/new');
                     });
                 }
             }
@@ -108,11 +105,9 @@ export const AddTestPage = () => {
                         text: error.message,
                         icon: 'error',
                         confirmButtonText: 'OK',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();
-                            navigate('/new');
-                        }
+                    }).then(() => {
+                        window.location.reload();
+                        navigate('/new');
                     });
                 }
             }
@@ -124,7 +119,7 @@ export const AddTestPage = () => {
         mainToCenter();
 
         const auth = localStorage.getItem('auth');
-        if (auth !== "true")
+        if (auth !== "true" || !localStorage.getItem("user"))
             navigate('/');
 
         setLoading(false);
@@ -137,7 +132,7 @@ export const AddTestPage = () => {
                 <div className="flex items-start">
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
                     <div className="ml-auto relative inline-block">
-                        <Link to={'/'}>
+                        <Link to={`/${localStorage.getItem("user")}`}>
                             <div className="btn-exit rounded-xl text-center text-[18px] py-1 px-4 bg-[#5b48c2] text-white border-none cursor-pointer">
                                 Wrócić
                             </div>

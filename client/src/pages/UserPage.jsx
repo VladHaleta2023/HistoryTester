@@ -21,7 +21,8 @@ export const UserPage = () => {
     const [textLoading, setTextLoading] = useState("Pobieranie...");
 
     useEffect(() => {
-        fetchUser(dispatch, navigate);
+        if (!localStorage.getItem("cookie"))
+            fetchUser(dispatch, navigate);
 
         mainToCenter();
         localStorage.clear();
@@ -42,8 +43,8 @@ export const UserPage = () => {
                 const response = await axiosTestInstance.get("/", { withCredentials: true });
                 setTests(response.data.tests);
 
-                mainToStart();
                 setLoading(false);
+                mainToStart();
 
                 const isAuth = localStorage.getItem('auth');
                 if (isAuth !== "true") {
@@ -51,8 +52,8 @@ export const UserPage = () => {
                 }
             } 
             catch (error) {
-                mainToStart();
                 setLoading(false);
+                mainToStart();
                 
                 if (error.response) {
                     const message = error.response.data.message;
@@ -68,7 +69,7 @@ export const UserPage = () => {
         }
 
         fetchData();
-    }, [auth?.user?._id, navigate, status, dispatch]);
+    }, [auth?.user?._id, navigate, status, dispatch, auth?.isAuthenticated, auth?.user?.status]);
 
     const handleSignOut = async (e) => {
         e.preventDefault();
@@ -98,6 +99,7 @@ export const UserPage = () => {
             }
         }
         finally {
+            setLoading(false);
             mainToStart();
             localStorage.clear();
         }
@@ -126,8 +128,8 @@ export const UserPage = () => {
                 try {
                     const response = await axiosTestInstance.delete(`/${localStorage.getItem("test")}`);
 
-                    mainToStart();
                     setLoading(false);
+                    mainToStart();
                     setTextLoading("Pobieranie...");
 
                     Swal.fire({
@@ -137,12 +139,11 @@ export const UserPage = () => {
                         confirmButtonText: 'OK',
                     }).then(() => {
                         window.location.reload();
-                        navigate(`/`);
                     });
                 }
                 catch (error) {
-                    mainToStart();
                     setLoading(false);
+                    mainToStart();
                     setTextLoading("Pobieranie...");
 
                     if (error.response) {
@@ -338,7 +339,7 @@ export const UserPage = () => {
                                             { userId === item.userId._id || status === "admin" ? (
                                             <>
                                                 <div className="profile-element mr-2 mb-2">
-                                                    <Link to={`/${item._id}`} onClick={() => {
+                                                    <Link to={`/test/${item._id}`} onClick={() => {
                                                         try {
                                                             localStorage.setItem("test", item._id);
                                                         }

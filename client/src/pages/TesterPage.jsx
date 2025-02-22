@@ -39,7 +39,7 @@ export const TesterPage = () => {
 
     useEffect(() => {
         const isAuth = localStorage.getItem('auth');
-        if (isAuth !== "true") {
+        if (isAuth !== "true" || !localStorage.getItem("user")) {
             setLoading(false);
             mainToStart();
             navigate('/');
@@ -160,6 +160,9 @@ export const TesterPage = () => {
             mainToStart();
             navigate('/');
         }
+
+        if (Number(randIndex) > datas.length)
+            localStorage.removeItem("randIndex");
         
         if (datas.length > 0 && numbers.length > 0) {
             const currentData = datas[numbers[randIndex]];
@@ -374,12 +377,10 @@ export const TesterPage = () => {
                 text: "",
                 icon: 'success',
                 confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    if (Number(localStorage.getItem("randIndex")) >= datas.length)
-                        navigate(`/${localStorage.getItem("test")}/result`);
-                    window.location.reload();
-                }
+            }).then(() => {
+                if (Number(localStorage.getItem("randIndex")) >= datas.length)
+                    navigate(`/${localStorage.getItem("test")}/result`);
+                window.location.reload();
             });
         }
         else {
@@ -406,12 +407,10 @@ export const TesterPage = () => {
                 html: message,
                 icon: 'error',
                 confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    if (Number(localStorage.getItem("randIndex")) >= datas.length)
-                        navigate(`/${localStorage.getItem("test")}/result`);
-                    window.location.reload();
-                }
+            }).then(() => {
+                if (Number(localStorage.getItem("randIndex")) >= datas.length)
+                    navigate(`/${localStorage.getItem("test")}/result`);
+                window.location.reload();
             });
         }
     }
@@ -422,7 +421,7 @@ export const TesterPage = () => {
                 <div className="flex items-start">
                     <div className="ml-0 text-indigo-500 font-bold">HISTORIA</div>
                     <div className="ml-auto relative inline-block">
-                        <Link to={`/`} onClick={() => {
+                        <Link to={`/${localStorage.getItem("user")}`} onClick={() => {
                                 localStorage.removeItem("data1Name");
                                 localStorage.removeItem("data2Name");
                                 localStorage.removeItem("randIndex");
