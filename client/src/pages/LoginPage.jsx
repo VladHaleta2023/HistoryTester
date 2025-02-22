@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import { show_hide_password } from '../scripts/password.js';
@@ -7,14 +7,21 @@ import axiosAuthInstance from '../axios/axiosAuthInstance.js';
 import Swal from 'sweetalert2';
 import { LoadingPage } from "../components/LoadingPage.jsx";
 import { mainToCenter, mainToStart } from "../scripts/mainPosition.js";
+import { fetchUser } from "../utils/getUser.js";
+import { useDispatch } from 'react-redux';
 
 export const LoginPage = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordType, setPasswordType] = useState('password');
     const [loading, setLoading] = useState(false);
     const [textLoading, setTextLoading] = useState("Trwa Logowanie Użytkownika. Proszę zaczekać...");
+
+    useEffect(() => {
+        fetchUser(dispatch, navigate);
+    }, [dispatch, navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -39,13 +46,15 @@ export const LoginPage = () => {
                     confirmButtonText: 'OK',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.reload();
                         localStorage.setItem('auth', "true");
                         setTimeout(() => {
                             mainToStart();
                             setLoading(false);
-                            navigate('/')
+                            navigate(`/${response.data.user}`);
                         }, 6000);
+                    }
+                    else {
+                        console.log("123");
                     }
                 });
             }
@@ -62,6 +71,9 @@ export const LoginPage = () => {
                     if (result.isConfirmed) {
                         localStorage.setItem('auth', "false");
                         navigate('/');
+                    }
+                    else {
+                        console.log("123");
                     }
                 });
             }

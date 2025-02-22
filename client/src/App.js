@@ -1,7 +1,6 @@
 import React from "react";
 import './index.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { MainPage } from './pages/MainPage.jsx';
 import { LoginPage } from "./pages/LoginPage.jsx";
 import { RegisterPage } from "./pages/RegisterPage.jsx";
 import { UsersPage } from "./pages/UsersPage.jsx";
@@ -14,6 +13,7 @@ import { TesterPage } from "./pages/TesterPage.jsx";
 import { ResultPage } from "./pages/ResultPage.jsx";
 import { TesterSettingsPage } from "./pages/TesterSettingsPage.jsx";
 import { AdminTestsPage } from "./pages/AdminTestsPage.jsx";
+import { UserPage } from "./pages/UserPage.jsx";
 
 function App() {
   return (
@@ -24,7 +24,8 @@ function App() {
           <Route path="/:testId/table/new" element={<AddDataPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/" element={<MainPage />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/:userId" element={<UserPage />} />
           <Route path="/:testId" element={<UpdateTestPage />} />
           <Route path="/:testId/tester" element={<TesterPage />} />
           <Route path="/:testId/result" element={<ResultPage />} />

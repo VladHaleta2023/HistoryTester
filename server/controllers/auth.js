@@ -144,7 +144,14 @@ export const logOut = async (req, res) => {
     try {
         try {
             delete req.headers.authorization;
-            res.clearCookie('token');
+            res.clearCookie('token', token, {
+                path: '/',
+                domain: 'historytester.onrender.com',
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'None',
+                maxAge: 1 * 24 * 60 * 60 * 1000,
+            });
         }
         catch (err) {
             return res.status(500).json({
