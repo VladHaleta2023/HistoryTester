@@ -17,6 +17,8 @@ const DB_PASSWORD = process.env.DB_PASSWORD || "vladhaleta2023";
 
 app.use(cors({
     origin: 'https://keen-nasturtium-cf96fc.netlify.app',
+    methods: ['GET', 'POST', 'DELETE', 'PUT'],
+    allowedHeaders: ['Authorization', 'Content-Type'],
     credentials: true,
 }));
 app.use(cookieParser());
