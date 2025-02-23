@@ -15,7 +15,7 @@ const DB_NAME = process.env.DB_NAME || "HIT";
 const DB_PASSWORD = process.env.DB_PASSWORD || "vladhaleta2023";
 
 app.use(cors({
-    origin: 'https://history-6oq2.onrender.com',
+    origin: 'https://keen-nasturtium-cf96fc.netlify.app/', // https://history-6oq2.onrender.com
     methods: ['GET', 'POST', 'DELETE', 'PUT'],
     allowedHeaders: ['Authorization', 'Content-Type'],
     credentials: true,
