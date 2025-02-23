@@ -24,7 +24,6 @@ export const UserPage = () => {
         fetchUser(dispatch, navigate);
 
         mainToCenter();
-        localStorage.clear();
         setStatus(auth?.user?.status || "user");
         setUserId(auth?.user?._id || null);
         localStorage.setItem("user", auth?.user?._id || null);
@@ -81,6 +80,8 @@ export const UserPage = () => {
             const response = await axiosAuthInstance.post('/logOut');
             localStorage.removeItem('admin');
             localStorage.setItem('auth', false);
+            localStorage.setItem('user', null);
+            localStorage.setItem('status', null);
             
             Swal.fire({
                 title: "Wylogowanie",
@@ -105,7 +106,6 @@ export const UserPage = () => {
         finally {
             setLoading(false);
             mainToStart();
-            localStorage.clear();
         }
     }
 
