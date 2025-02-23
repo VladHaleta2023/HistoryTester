@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import { show_hide_password } from '../scripts/password.js';
@@ -18,6 +18,22 @@ export const LoginPage = () => {
     const [passwordType, setPasswordType] = useState('password');
     const [loading, setLoading] = useState(false);
     const [textLoading, setTextLoading] = useState("Trwa Logowanie Użytkownika. Proszę zaczekać...");
+
+    useEffect(() => {
+        const show = localStorage.getItem("show");
+
+        if (show === "true") {
+            const show_title = localStorage.getItem("show_title") || "UWAGA!!!";
+            const show_text = localStorage.getItem("show_text") || "Proszę wszystkich o wylogowanie z systemu, ponieważ idzie aktualizacja programu. Wasze dane mogą być niezachowane!";
+
+            Swal.fire({
+                title: show_title,
+                text: show_text,
+                icon: 'info',
+                confirmButtonText: 'OK'});
+        }
+
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
