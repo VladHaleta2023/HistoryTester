@@ -14,8 +14,20 @@ const DB_USER = process.env.DB_USER || "vladhaleta2023";
 const DB_NAME = process.env.DB_NAME || "HIT";
 const DB_PASSWORD = process.env.DB_PASSWORD || "vladhaleta2023";
 
+const allowedOrigins = [
+    'https://keen-nasturtium-cf96fc.netlify.app',
+    'https://history-6oq2.onrender.com',
+    'http://localhost:3000'
+];
+
 app.use(cors({
-    origin: 'https://keen-nasturtium-cf96fc.netlify.app', // https://history-6oq2.onrender.com
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin) || !origin) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'DELETE', 'PUT'],
     allowedHeaders: ['Authorization', 'Content-Type'],
     credentials: true,
