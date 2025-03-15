@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/auth.css';
 import { show_hide_password } from '../scripts/password.js';
@@ -18,22 +18,6 @@ export const LoginPage = () => {
     const [passwordType, setPasswordType] = useState('password');
     const [loading, setLoading] = useState(false);
     const [textLoading, setTextLoading] = useState("Trwa Logowanie Użytkownika. Proszę zaczekać...");
-
-    useEffect(() => {
-        const show = localStorage.getItem("show");
-
-        if (show === "true") {
-            const show_title = localStorage.getItem("show_title") || "UWAGA!!!";
-            const show_text = localStorage.getItem("show_text") || "Proszę wszystkich o wylogowanie z systemu, ponieważ idzie aktualizacja programu. Wasze dane mogą być niezachowane!";
-
-            Swal.fire({
-                title: show_title,
-                text: show_text,
-                icon: 'info',
-                confirmButtonText: 'OK'});
-        }
-
-    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -137,12 +121,12 @@ export const LoginPage = () => {
                     </div>
                     <div className="element flex flex-col mb-3 m-0">
                         <label htmlFor="username" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-user"></i><b>Użytkownik</b></label>
-                        <input type="text" id="username" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter Username" name="username" required />
+                        <input type="text" id="username" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter Username" name="username" required />
                     </div>
                     <div className="element flex flex-col mb-3 m-0">
                         <label htmlFor="password" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-lock"></i><b>Hasło</b></label>
                         <div className="relative">
-                            <input type={passwordType} id="password" className="mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter Password" name="password" required />
+                            <input type={passwordType} id="password" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter Password" name="password" required />
                             <img id="passwordImg" onClick={(e) => setPasswordType(show_hide_password(e.target, "password"))} src="password-view.svg" className="passImg absolute top-[6px] right-[10px] inline-block w-7 h-7 cursor-pointer" alt="view password" />
                         </div>
                     </div>

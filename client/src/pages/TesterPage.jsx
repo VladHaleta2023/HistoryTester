@@ -192,7 +192,7 @@ export const TesterPage = () => {
                 if (localStorage.getItem("autorTester") === "false") {
                     setUserAutorAnswer(currentData.data.data1);
                 } else if (localStorage.getItem("typeTester") === "select" && data1.length > 0) {
-                    setUserAutorAnswer(data1[0]);
+                    setUserAutorAnswer("");
                 } else {
                     setUserAutorAnswer("");
                 }
@@ -200,7 +200,7 @@ export const TesterPage = () => {
                 if (localStorage.getItem("nameTester") === "false") {
                     setUserNameAnswer(currentData.data.data2);
                 } else if (localStorage.getItem("typeTester") === "select" && data2.length > 0) {
-                    setUserNameAnswer(data2[0]);
+                    setUserNameAnswer("");
                 } else {
                     setUserNameAnswer("");
                 }
@@ -242,8 +242,7 @@ export const TesterPage = () => {
           ...provided,
           backgroundColor: "white",
           border: "1px solid #ccc",
-          paddingLeft: "0px",
-          boxShadow: "none",
+          textAlign: "left",
           "&:hover": {
             border: "1px solid #888",
           },
@@ -258,44 +257,25 @@ export const TesterPage = () => {
         }),
     };
 
-    const changeUserAutorAnswer = (selectedOption) => {
-        const { value } = selectedOption;
-
-        setUserAutorAnswer(value);
-    }
-
-    const changeUserNameAnswer = (selectedOption) => {
-        const { value } = selectedOption;
-
-        setUserNameAnswer(value);
-    }
-
     const autorComponent = () => {
         if (localStorage.getItem("autorTester") === null || 
             localStorage.getItem("nameTester") === null ||
             localStorage.getItem("typeTester") === null) {
-                return null;
-            }
-
+            return null;
+        }
+        
         if (localStorage.getItem("autorTester") === "true") {
             if (localStorage.getItem("typeTester") === "select") {
                 return (
                     <Select
                         className="selectTester"
-                        value={
-                            autorOptions.length > 0
-                                ? { value: userAutorAnswer, label: userAutorAnswer }
-                                : null
-                        }
-                        onChange={(selectedOption) => changeUserAutorAnswer(selectedOption)}
+                        onChange={(selectedOption) => setUserAutorAnswer(selectedOption.value)}
                         styles={customStyles}
                         menuPlacement="bottom"
+                        placeholder="Wyszukaj..."
                         options={autorOptions}
-                        defaultValue={
-                            autorOptions.length > 0 ? autorOptions[0] : null
-                        }
                         isLoading={autorOptions.length === 0}
-                        isSearchable={false}
+                        isSearchable={true}
                     />
                 );
             }
@@ -324,20 +304,13 @@ export const TesterPage = () => {
                 return (
                     <Select
                         className="selectTester"
-                        value={
-                            nameOptions.length > 0
-                                ? { value: userNameAnswer, label: userNameAnswer }
-                                : null
-                        }
-                        onChange={(selectedOption) => changeUserNameAnswer(selectedOption)}
+                        onChange={(selectedOption) => setUserNameAnswer(selectedOption.value)}
                         styles={customStyles}
                         menuPlacement="bottom"
+                        placeholder="Wyszukaj..."
                         options={nameOptions}
-                        defaultValue={
-                            nameOptions.length > 0 ? nameOptions[0] : null
-                        }
                         isLoading={nameOptions.length === 0}
-                        isSearchable={false}
+                        isSearchable={true}
                     />
                 );
             }
@@ -354,71 +327,124 @@ export const TesterPage = () => {
         }
     }
 
-    const handleNext = (e) => {
-        e.preventDefault();
+    const setTestStat =  async () => {
+        try {
+            const formData = new FormData();
 
-        const correctAutor = datas[numbers[randIndex]].data.data1;
-        const correctName = datas[numbers[randIndex]].data.data2;
+            let points = 0;
+            for (let i = 0; i < answers.length; i++)
+                points += answers[i].point;
 
-        if (Number(randIndex) + 1 > datas.length)
-            localStorage.setItem("randIndex", 0);
-        else
-            localStorage.setItem("randIndex", Number(randIndex) + 1);
+            let total = datas.length;
+            let percent = Number(((points / total) * 100).toFixed(2));
 
-        if (userAutorAnswer === correctAutor && userNameAnswer === correctName) {
-            answers.push({
-                userData1: userAutorAnswer,
-                userData2: userNameAnswer,
-                data1: correctAutor,
-                data2: correctName,
-                images: images,
-                point: 1
-            });
-    
-            setAnswers(localStorage.setItem('answers', JSON.stringify(answers))); 
+            formData.append('userQuestionCount', answers.length);
+            formData.append('percent', percent);
 
-            Swal.fire({
-                title: "Prawidłowo",
-                text: "",
-                icon: 'success',
-                confirmButtonText: 'OK',
-            }).then(() => {
-                if (Number(localStorage.getItem("randIndex")) >= datas.length)
-                    navigate(`/${localStorage.getItem("test")}/result`);
-                window.location.reload();
+            if (textBtnNext === "Wyniki")
+                formData.append('result', true);
+
+            await axiosTestInstance.put(`/${localStorage.getItem("test")}/stat`, formData,
+            {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                }
             });
         }
-        else {
-            let message = "";
-
-            if (userAutorAnswer !== correctAutor)
-                message += `<div>${data1Name}: ${correctAutor}</div>`;
-            if (userNameAnswer !== correctName)
-                message += `<div>${data2Name}: ${correctName}</div>`;
-
-            answers.push({
-                userData1: userAutorAnswer,
-                userData2: userNameAnswer,
-                data1: correctAutor,
-                data2: correctName,
-                images: images,
-                point: 0
-            });
-    
-            setAnswers(localStorage.setItem('answers', JSON.stringify(answers))); 
-
-            Swal.fire({
-                title: "Nie prawidłowo",
-                html: message,
-                icon: 'error',
-                confirmButtonText: 'OK',
-            }).then(() => {
-                if (Number(localStorage.getItem("randIndex")) >= datas.length)
-                    navigate(`/${localStorage.getItem("test")}/result`);
-                window.location.reload();
-            });
+        catch (err) {
+            console.log(err);
         }
     }
+
+    const handleNext = async (e) => {
+        e.preventDefault();
+
+        try {
+            const correctAutor = datas[numbers[randIndex]].data.data1;
+            const correctName = datas[numbers[randIndex]].data.data2;
+
+            if (Number(randIndex) + 1 > datas.length)
+                localStorage.setItem("randIndex", 0);
+            else
+                localStorage.setItem("randIndex", Number(randIndex) + 1);
+
+            if (userAutorAnswer === correctAutor && userNameAnswer === correctName) {
+                answers.push({
+                    userData1: userAutorAnswer,
+                    userData2: userNameAnswer,
+                    data1: correctAutor,
+                    data2: correctName,
+                    images: images,
+                    point: 1
+                });
+        
+                setAnswers(localStorage.setItem('answers', JSON.stringify(answers)));
+                await setTestStat();
+
+                Swal.fire({
+                    title: "Prawidłowo",
+                    text: "",
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                }).then(() => {
+                    if (Number(localStorage.getItem("randIndex")) >= datas.length)
+                        navigate(`/${localStorage.getItem("test")}/result`);
+                    window.location.reload();
+                });
+            }
+            else {
+                let message = "";
+
+                if (userAutorAnswer !== correctAutor)
+                    message += `<div>${data1Name}: ${correctAutor}</div>`;
+                if (userNameAnswer !== correctName)
+                    message += `<div>${data2Name}: ${correctName}</div>`;
+
+                answers.push({
+                    userData1: userAutorAnswer,
+                    userData2: userNameAnswer,
+                    data1: correctAutor,
+                    data2: correctName,
+                    images: images,
+                    point: 0
+                });
+        
+                setAnswers(localStorage.setItem('answers', JSON.stringify(answers)));
+                await setTestStat();
+
+                Swal.fire({
+                    title: "Nie prawidłowo",
+                    html: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                }).then(() => {
+                    if (Number(localStorage.getItem("randIndex")) >= datas.length)
+                        navigate(`/${localStorage.getItem("test")}/result`);
+                    window.location.reload();
+                });
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    window.addEventListener('popstate', function() {
+        try {
+            localStorage.removeItem("data1Name");
+            localStorage.removeItem("data2Name");
+            localStorage.removeItem("randIndex");
+            localStorage.removeItem("numbers");
+            localStorage.removeItem("autorTester");
+            localStorage.removeItem("nameTester");
+            localStorage.removeItem("typeTester");
+            localStorage.removeItem("answers");
+            localStorage.removeItem("data");
+        }
+        catch {
+            return;
+        }
+    });
 
     return <>
         <header className="flex flex-col header p-3.5 text-white text-[28px] select-none fixed w-screen z-10">

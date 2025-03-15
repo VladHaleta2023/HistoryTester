@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addTest, getTests, getTest, deleteImage, updateTest, deleteTest, changeTestStatus } from "../controllers/test.js";
+import { addTest, getTests, getTest, deleteImage, updateTest, deleteTest, changeTestStatus, setTestStat, getTestStats } from "../controllers/test.js";
 import { checkAuth } from "../middleware/checkAuth.js";
 import multer from "multer";
 
@@ -34,5 +34,9 @@ router.delete('/:testId/image', checkAuth, deleteImage);
 router.put('/:testId', checkAuth, upload.single('image'), updateTest);
 
 router.delete('/:testId', checkAuth, deleteTest);
+
+router.put('/:testId/stat', checkAuth, upload.none(), setTestStat);
+
+router.get('/:testId/stat', checkAuth, getTestStats);
 
 export default router;

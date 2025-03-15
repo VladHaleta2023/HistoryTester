@@ -14,6 +14,7 @@ import { ResultPage } from "./pages/ResultPage.jsx";
 import { TesterSettingsPage } from "./pages/TesterSettingsPage.jsx";
 import { AdminTestsPage } from "./pages/AdminTestsPage.jsx";
 import { UserPage } from "./pages/UserPage.jsx";
+import { TestStatPage } from "./pages/TestStatPage.jsx";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/:userId" element={<UserPage />} />
           <Route path="/test/:testId" element={<UpdateTestPage />} />
           <Route path="/:testId/tester" element={<TesterPage />} />
+          <Route path="/test/:testId/stat" element={<TestStatPage />} />
           <Route path="/:testId/result" element={<ResultPage />} />
           <Route path="/:testId/settings" element={<TesterSettingsPage />} />
           <Route path="/:testId/table" element={<TablePage />} />

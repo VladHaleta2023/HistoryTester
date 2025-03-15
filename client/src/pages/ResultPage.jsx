@@ -124,6 +124,19 @@ export const ResultPage = () => {
         );
     }
 
+    window.addEventListener('popstate', function() {
+        try {
+            localStorage.removeItem("data1Name");
+            localStorage.removeItem("data2Name");
+            localStorage.removeItem("randIndex");
+            localStorage.removeItem("numbers");
+            localStorage.removeItem("answers");
+        }
+        catch {
+            return;
+        }
+    });
+
     return <>
         <header className="flex flex-col header p-3.5 text-white text-[28px] select-none fixed w-screen z-10">
             <nav>

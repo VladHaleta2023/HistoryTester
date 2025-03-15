@@ -180,11 +180,16 @@ textarea, .progressBar {
         width: 100% !important;
     }
 
-    input, img.updateDataPage, .selectTester, textarea, .elementTester, .progressBar {
+    .input, img.updateDataPage, textarea, .selectTester, .elementTester, .progressBar {
         width: 90vw !important;
     }
 
-    input, img.tablePage {
+    img.tablePage {
+        min-height: 250px !important;
+        height: 250px !important;
+    }
+
+    input {
         max-height: 250px !important;
         font-size: 1.2rem;
     }

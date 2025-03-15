@@ -2,6 +2,7 @@ import User from "../models/user.js";
 import Test from "../models/test.js";
 import Data from "../models/data.js";
 import Image from "../models/image.js";
+import Stat from "../models/stat.js";
 import dotenv from 'dotenv';
 import cloudinary from "cloudinary";
 import streamifier from 'streamifier';
@@ -353,5 +354,94 @@ export const deleteTest = async (req, res) => {
         return res.status(500).json({
             message: `Server error: ${err}`
         });
+    }
+}
+
+export const setTestStat = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+
+        if (!user) {
+            return res.status(400).json({
+                message: "Użytkownik nie znaleziony"
+            });
+        }
+    
+        const test = await Test.findById(req.params.testId);
+
+        if (!test) {
+            return res.status(400).json({ message: "Test nie znaleziony" });
+        }
+
+        const { userQuestionCount, percent } = req.body;
+        let { result } = req.body;
+        result = (result !== undefined && (result === true || result === "true")) ? true : false;
+
+        const testStat = await Stat.findOne({ userId: user._id });
+
+        if (testStat) {
+            if (testStat.userQuestionCount < userQuestionCount)
+                testStat.userQuestionCount = userQuestionCount;
+            if (testStat.bestPercent < percent)
+                testStat.bestPercent = percent;
+            if (result)
+                testStat.repetitions = testStat.repetitions + 1;
+
+            await testStat.save();
+
+            return res.status(200).json({ 
+                message: "Aktualizacja statystyki testa udana",
+                testStat: testStat
+            });
+        }
+        else {
+            const newTestStat = new Stat({
+               userId: user._id,
+               testId: test._id,
+            });
+
+            await newTestStat.save();
+
+            return res.status(200).json({ 
+                message: "Aktualizacja statystyki testa udana (START)",
+                testStat: newTestStat
+            });
+        }
+    }
+    catch (err) {
+        console.log(`Server error: ${err}`);
+        return res.status(500).json({ message: `Server error: ${err}` });
+    }
+}
+
+export const getTestStats = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+
+        if (!user) {
+            return res.status(400).json({
+                message: "Użytkownik nie znaleziony"
+            });
+        }
+    
+        const test = await Test.findById(req.params.testId);
+
+        if (!test) {
+            return res.status(400).json({ message: "Test nie znaleziony" });
+        }
+
+        const testStats = await Stat.find({ testId: test._id })
+            .populate("userId")
+            .collation({ locale: "pl", strength: 2 })
+            .sort({ percent: -1, "userId.username": 1 });
+
+        return res.status(200).json({ 
+            message: "Uzyskanie wyników testa udane",
+            testStats: testStats
+        });
+    }
+    catch (err) {
+        console.log(`Server error: ${err}`);
+        return res.status(500).json({ message: `Server error: ${err}` });
     }
 }

@@ -389,13 +389,13 @@ export const UpdateDataPage = () => {
             <div className="mt-6">
                 <div className="element flex flex-col mb-3 m-0">
                     <label htmlFor="data1" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>{data1Name}</b></label>
-                    <input type="text" id="data1" className="bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data1} onChange={(e) => setData1(e.target.value)} placeholder="Pierwsza Kolumna" name="data1" required />
+                    <input type="text" id="data1" className="input bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data1} onChange={(e) => setData1(e.target.value)} placeholder="Pierwsza Kolumna" name="data1" required />
                 </div>
             </div>
             <div className="mt-2">
                 <div className="element flex flex-col mb-3 m-0">
                     <label htmlFor="data2" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>{data2Name}</b></label>
-                    <input type="text" id="data2" className="bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data2} onChange={(e) => setData2(e.target.value)} placeholder="Druga Kolumna" name="data2" required />
+                    <input type="text" id="data2" className="input bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data2} onChange={(e) => setData2(e.target.value)} placeholder="Druga Kolumna" name="data2" required />
                 </div>
             </div>
             <div className="text-white">
@@ -404,7 +404,7 @@ export const UpdateDataPage = () => {
                     <div className="mt-2" key={index}>
                     <div className="element flex flex-col mb-3 m-0">
                         <img src={image.imageUrl} alt="Obraz" className="updateDataPage" />
-                        <input type="file" id={image._id} className="uploadImageData bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" name="image" />
+                        <input type="file" id={image._id} className="input uploadImageData bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" name="image" />
                         <div onClick={(e) => deleteUploadImage(e, image._id)} className="w-[120px] btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[rgb(105,0,0)] text-white border-none cursor-pointer mt-1">
                             Usunąć
                         </div>
@@ -414,7 +414,7 @@ export const UpdateDataPage = () => {
                 {files.map((inputIndex, index) => (
                     <div className="mt-2" key={index}>
                         <div className="element flex flex-col mb-3 m-0">
-                            <input type="file" className="imageData bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" onChange={(e) => handleFileChange(e, index)} name="image" />
+                            <input type="file" className="input imageData bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" onChange={(e) => handleFileChange(e, index)} name="image" />
                             <div onClick={(e) => handleDeleteInput(e, index)} className="w-[120px] btnUser rounded-xl text-center text-[18px] py-1 px-4 bg-[rgb(105,0,0)] text-white border-none cursor-pointer mt-1">
                                 Usunąć
                             </div>

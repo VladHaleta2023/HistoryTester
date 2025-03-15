@@ -74,7 +74,11 @@ export const UserPage = () => {
     }, [auth?.user?._id, navigate, status, dispatch, auth?.isAuthenticated, auth?.user?.status]);
 
     const handleSignOut = async (e) => {
-        e.preventDefault();
+        try {
+            e.preventDefault();
+            localStorage.clear();
+        }
+        catch {}
 
         try {
             const response = await axiosAuthInstance.post('/logOut');
@@ -237,7 +241,7 @@ export const UserPage = () => {
             ) : (
                 <div className="flex flex-col justify-start">
                     {tests.length === 0 ? (
-                        <p className="font-bold text-indigo-600">Brak testów</p>
+                        <p className="font-bold text-indigo-600"></p>
                     ) : (
                         <div>
                             {tests.map((item, index) => (
@@ -345,6 +349,18 @@ export const UserPage = () => {
                                             { userId === item.userId._id || status === "admin" ? (
                                             <>
                                                 <div className="profile-element mr-2 mb-2">
+                                                    <Link to={`/test/${item._id}/stat`} onClick={() => {
+                                                        try {
+                                                            localStorage.setItem("test", item._id);
+                                                        }
+                                                        catch (err) {
+                                                            console.log(err);
+                                                        }
+                                                    }}>
+                                                        <div id={item._id} className="edit-element text-[20px] py-1.5 px-7 bg-[#36508d] text-white border-none cursor-pointer rounded-xl">Wyniki Testa</div>
+                                                    </Link>
+                                                </div>
+                                                <div className="profile-element mr-2 mb-2">
                                                     <Link to={`/test/${item._id}`} onClick={() => {
                                                         try {
                                                             localStorage.setItem("test", item._id);
@@ -356,10 +372,9 @@ export const UserPage = () => {
                                                         <div id={item._id} className="edit-element text-[20px] py-1.5 px-7 bg-[#36508d] text-white border-none cursor-pointer rounded-xl">Edytować Opis</div>
                                                     </Link>
                                                 </div>
-                                                
-                                            </>
-                                            ) : null}
-                                            
+                                            </>) : null}
+                                        </div>
+                                        <div className="flex flex-wrap btnsLP mt-2">
                                             <div className="profile-element mr-2 mb-2">
                                                 <Link to={`/${item._id}/table`} onClick={() => {
                                                     try {
@@ -385,9 +400,15 @@ export const UserPage = () => {
                                                     </div>
                                                 </>) : null}
                                             <div className="profile-element mr-2 mb-2">
-                                                <Link to={`/${item._id}/tester`} onClick={() => {
+                                                <Link to={`/${item._id}/tester`} onClick={async () => {
                                                     try {
                                                         localStorage.setItem("test", item._id);
+
+                                                        await axiosTestInstance.put(`/${item._id}/stat`, {
+                                                            headers: {
+                                                                'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+                                                            }
+                                                        });
                                                     }
                                                     catch (err) {
                                                         console.log(err);

@@ -161,25 +161,25 @@ export const AddTestPage = () => {
             <div className="mt-6">
                 <div className="element flex flex-col mb-3 m-0">
                     <label htmlFor="image" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>Obraz Fonowy</b></label>
-                    <input type="file" id="image" className="bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" onChange={onFileChange} name="image" />
+                    <input type="file" id="image" className="input bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" onChange={onFileChange} name="image" />
                 </div>
             </div>
             <div className="mt-2">
                 <div className="element flex flex-col mb-3 m-0">
                     <label htmlFor="name" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>Nazwa Testa</b></label>
-                    <input type="text" id="name" className="bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nazwa Testa" name="name" required />
+                    <input type="text" id="name" className="input bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nazwa Testa" name="name" required />
                 </div>
             </div>
             <div className="mt-2">
                 <div className="element flex flex-col mb-3 m-0">
                     <label htmlFor="data1Name" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>Nazwa Pierwszej Kolumny</b></label>
-                    <input type="text" id="data1Name" className="bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data1Name} onChange={(e) => setData1Name(e.target.value)} placeholder="Nazwa Pierwszej Kolumny" name="data1Name" required />
+                    <input type="text" id="data1Name" className="input bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data1Name} onChange={(e) => setData1Name(e.target.value)} placeholder="Nazwa Pierwszej Kolumny" name="data1Name" required />
                 </div>
             </div>
             <div className="mt-2">
                 <div className="element flex flex-col mb-3 m-0">
                     <label htmlFor="data2Name" className="inputTitle text-indigo-600 text-[20px] mb-1 mr-3"><b>Nazwa Drugiej Kolumny</b></label>
-                    <input type="text" id="data2Name" className="bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data2Name} onChange={(e) => setData2Name(e.target.value)} placeholder="Nazwa Drugiej Kolumny" name="data2Name" required />
+                    <input type="text" id="data2Name" className="input bg-slate-300 mb-1 p-2 border border-gray-300 rounded-md w-[600px] text-black text-[1.2rem]" value={data2Name} onChange={(e) => setData2Name(e.target.value)} placeholder="Nazwa Drugiej Kolumny" name="data2Name" required />
                 </div>
             </div></>)}
         </main>
