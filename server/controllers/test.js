@@ -377,7 +377,7 @@ export const setTestStat = async (req, res) => {
         let { result } = req.body;
         result = (result !== undefined && (result === true || result === "true")) ? true : false;
 
-        const testStat = await Stat.findOne({ userId: user._id });
+        const testStat = await Stat.findOne({ userId: user._id, testId: test._id });
 
         if (testStat) {
             if (testStat.userQuestionCount < userQuestionCount)
