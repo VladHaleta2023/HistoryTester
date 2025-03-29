@@ -403,7 +403,7 @@ export const setTestStat = async (req, res) => {
             await newTestStat.save();
 
             return res.status(200).json({ 
-                message: "Aktualizacja statystyki testa udana (START)",
+                message: "Aktualizacja statystyki testa udana",
                 testStat: newTestStat
             });
         }

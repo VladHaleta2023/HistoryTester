@@ -260,6 +260,10 @@ export const UserPage = () => {
                                             <div className="text-slate-300 break-words">{item.userId.username}</div>
                                         </div>
                                         <div className="flex flex-wrap dataLP">
+                                            <div className="text-indigo-600 font-bold mr-2">Klasa:</div>
+                                            <div className="text-slate-300 break-words">{item.userId.class}</div>
+                                        </div>
+                                        <div className="flex flex-wrap dataLP">
                                             <div className="text-indigo-600 font-bold mr-2">Stworzenie:</div>
                                             <div className="text-slate-300 break-words">{getDate(new Date(item.createdAt))}</div>
                                         </div>
@@ -318,6 +322,10 @@ export const UserPage = () => {
                                         <div className="flex flex-wrap dataLP">
                                             <div className="text-indigo-600 font-bold mr-2">Twórca:</div>
                                             <div className="text-slate-300 break-words">{item.userId.username}</div>
+                                        </div>
+                                        <div className="flex flex-wrap dataLP">
+                                            <div className="text-indigo-600 font-bold mr-2">Klasa:</div>
+                                            <div className="text-slate-300 break-words">{item.userId.class}</div>
                                         </div>
                                         { userId === item.userId._id || status === "admin" ? (
                                         <>

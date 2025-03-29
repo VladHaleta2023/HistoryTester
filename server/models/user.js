@@ -10,6 +10,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    class: {
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         required: true

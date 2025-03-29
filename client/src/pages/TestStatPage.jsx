@@ -114,6 +114,10 @@ export const TestStatPage = () => {
                                             </div>
                                         </div>
                                         <div className="flex flex-wrap dataLP mt-2">
+                                            <div className="text-indigo-600 font-bold mr-2">Klasa:</div>
+                                            <div className="text-slate-300 break-words">{item.userId.class}</div>
+                                        </div>
+                                        <div className="flex flex-wrap dataLP">
                                             <div className="text-indigo-600 font-bold mr-2">Ilość Pytań:</div>
                                             <div className="text-slate-300 break-words">{item.userQuestionCount}</div>
                                         </div>

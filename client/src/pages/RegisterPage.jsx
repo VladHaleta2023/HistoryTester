@@ -13,6 +13,7 @@ import { setCredentials, setAuth, setAlert } from "../redux/reducers/authSlice.j
 export const RegisterPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [classUser, setClassUser] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [cpassword, setCPassword] = useState('');
@@ -28,10 +29,24 @@ export const RegisterPage = () => {
         setLoading(true);
         setTextLoading("Trwa Rejestrowanie Użytkownika. Proszę zaczekać...");
 
-        if (!username || !password || !cpassword) {
+        if (!username || username === "") {
             mainToStart(true);
             setLoading(false);
-            showAlert(400, "Rejestracja", "Proszę wpisać Użytkownika, Hasło i Potwierdzenie Hasła");
+            showAlert(400, "Rejestracja", "Proszę wpisać Nazwę Użytkownika");
+            return;
+        }
+
+        if (!classUser || classUser === "") {
+            mainToStart(true);
+            setLoading(false);
+            showAlert(400, "Rejestracja", "Proszę wpisać Klasę");
+            return;
+        }
+
+        if (!password || password === "" || !cpassword || cpassword === "") {
+            mainToStart(true);
+            setLoading(false);
+            showAlert(400, "Rejestracja", "Proszę wpisać Hasło oraz Potwierdzenie Hasła");
             return;
         }
 
@@ -47,7 +62,7 @@ export const RegisterPage = () => {
             if (username === "Admin")
                 status = "admin"
 
-            const response = await axiosAuthInstance.post('/register', { username, password, status });
+            const response = await axiosAuthInstance.post('/register', { username, password, status, classUser });
 
             localStorage.setItem('auth', "true");
 
@@ -117,20 +132,24 @@ export const RegisterPage = () => {
                         <p className="title text-indigo-600 text-3xl font-bold">Rejestracja</p>
                     </div>
                     <div className="element flex flex-col mb-3 m-0">
-                        <label htmlFor="username" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-user"></i><b>Użytkownik</b></label>
-                        <input type="text" id="username" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter Username" name="username" required />
+                        <label htmlFor="username" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-user"></i><b>Nazwa Użytkownika</b></label>
+                        <input type="text" id="username" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Wprowadź Nazwę Użytkownika" name="username" required />
+                    </div>
+                    <div className="element flex flex-col mb-3 m-0">
+                        <label htmlFor="class" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-user"></i><b>Klasa</b></label>
+                        <input type="text" id="class" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={classUser} onChange={(e) => setClassUser(e.target.value)} placeholder="Wprowadź Klasę" name="classUser" required />
                     </div>
                     <div className="element flex flex-col mb-3 m-0">
                         <label htmlFor="password" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-lock"></i><b>Hasło</b></label>
                         <div className="relative">
-                            <input type={passwordType} id="password" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter Password" name="password" required />
+                            <input type={passwordType} id="password" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Wprowadź Hasło" name="password" required />
                             <img id="passwordImg" onClick={(e) => setPasswordType(show_hide_password(e.target, "password"))} src="password-view.svg" className="passImg absolute top-[6px] right-[10px] inline-block w-7 h-7 cursor-pointer" alt="view password" />
                         </div>
                     </div>
                     <div className="element flex flex-col mb-3 m-0">
                         <label htmlFor="cpassword" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-lock"></i><b>Potwierdź Hasło</b></label>
                         <div className="relative">
-                            <input type={cpasswordType} id="cpassword" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={cpassword} onChange={(e) => setCPassword(e.target.value)} placeholder="Enter Confirm Password" name="password" required />
+                            <input type={cpasswordType} id="cpassword" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={cpassword} onChange={(e) => setCPassword(e.target.value)} placeholder="Potwierdź Hasło" name="cpassword" required />
                             <img id="passwordImg" onClick={(e) => setCPasswordType(show_hide_password(e.target, "cpassword"))} src="password-view.svg" className="passImg absolute top-[6px] right-[10px] inline-block w-7 h-7 cursor-pointer" alt="view password" />
                         </div>
                     </div>

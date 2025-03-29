@@ -6,10 +6,10 @@ dotenv.config();
 
 export const register = async (req, res) => {
     try {
-        const {username, password, status} = req.body;
+        const {username, password, status, classUser} = req.body;
 
-        if (!username || !password || !status ||
-            password == "" || username == "" || status == "") {
+        if (!username || !password || !status || !classUser ||
+            password == "" || username == "" || status == "" || classUser == "") {
             return res.ststus(400).json({
                 message: "Proszę uzupełnić wszystkie dane rejestracji"
             })
@@ -26,7 +26,8 @@ export const register = async (req, res) => {
         const newUser = new User({
             username,
             password,
-            status
+            status,
+            class: classUser
         });
 
         const token = jwt.sign(

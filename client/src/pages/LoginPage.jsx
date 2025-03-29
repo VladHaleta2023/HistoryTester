@@ -26,8 +26,8 @@ export const LoginPage = () => {
         setLoading(true);
         setTextLoading("Trwa Logowanie Użytkownika. Proszę zaczekać...");
 
-        if (!username || !password) {
-            showAlert(400, "Logowanie", "Proszę wpisać Użytkownika i Hasło");
+        if (!username || username === "" || !password || password === "") {
+            showAlert(400, "Logowanie", "Proszę wpisać Nazwę Użytkownika i Hasło");
             return;
         }
 
@@ -120,13 +120,13 @@ export const LoginPage = () => {
                         <p className="title text-indigo-600 text-3xl font-bold">Logowanie</p>
                     </div>
                     <div className="element flex flex-col mb-3 m-0">
-                        <label htmlFor="username" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-user"></i><b>Użytkownik</b></label>
-                        <input type="text" id="username" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter Username" name="username" required />
+                        <label htmlFor="username" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-user"></i><b>Nazwa Użytkownika</b></label>
+                        <input type="text" id="username" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Wprowadź Nazwę Użytkownika" name="username" required />
                     </div>
                     <div className="element flex flex-col mb-3 m-0">
                         <label htmlFor="password" className="text-indigo-600 text-[20px] mb-1 mr-3"><i className="fa fa-lock"></i><b>Hasło</b></label>
                         <div className="relative">
-                            <input type={passwordType} id="password" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter Password" name="password" required />
+                            <input type={passwordType} id="password" className="input mb-1 p-2 border border-gray-300 rounded-md text-1xl w-[600px] text-black" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Wprowadź Hasło" name="password" required />
                             <img id="passwordImg" onClick={(e) => setPasswordType(show_hide_password(e.target, "password"))} src="password-view.svg" className="passImg absolute top-[6px] right-[10px] inline-block w-7 h-7 cursor-pointer" alt="view password" />
                         </div>
                     </div>
